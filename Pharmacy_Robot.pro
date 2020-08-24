@@ -35,4 +35,5 @@ INCLUDEPATH += \
     /opt/intel/openvino/opencv/include
 
 LIBS += \
-    /opt/intel/openvino/opencv/lib/libopencv*.so
+    /opt/intel/openvino/opencv/lib/libopencv*.so \
+    /usr/lib/libnfc.so

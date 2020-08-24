@@ -45,6 +45,13 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QPushButton" name="readCardButton">
+        <property name="text">
+         <string>readCard</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>

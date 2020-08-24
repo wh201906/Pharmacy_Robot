@@ -2,10 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <opencv2/opencv.hpp>
 #include <QDebug>
 #include <QThread>
 #include <QMessageBox>
+
+#include <opencv2/opencv.hpp>
+#include <nfc/nfc.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -29,10 +31,16 @@ private slots:
 
     void on_camCloseButton_clicked();
 
+    void on_readCardButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     cv::VideoCapture* cap;
     cv::Mat* videoFrame;
     QImage* imgFrame;
+
+    nfc_device* nfcPn532;
+    nfc_target nfcTarget;
+    nfc_context* nfcContext;
 };
 #endif // MAINWINDOW_H
