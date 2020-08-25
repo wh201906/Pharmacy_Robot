@@ -9,6 +9,8 @@
 #include <opencv2/opencv.hpp>
 #include <nfc/nfc.h>
 
+#include "module/rfid.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -38,9 +40,5 @@ private:
     cv::VideoCapture* cap;
     cv::Mat* videoFrame;
     QImage* imgFrame;
-
-    nfc_device* nfcPn532;
-    nfc_target nfcTarget;
-    nfc_context* nfcContext;
 };
 #endif // MAINWINDOW_H

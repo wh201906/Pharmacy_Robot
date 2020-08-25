@@ -17,10 +17,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    module/rfid.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    module/rfid.h
 
 FORMS += \
     mainwindow.ui
