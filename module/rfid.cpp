@@ -11,6 +11,7 @@ RFID::RFID(QObject *parent) : QObject(parent)
 
 bool RFID::init()
 {
+    setenv("LIBNFC_INTRUSIVE_SCAN", "yes", 1);
     nfc_init(&nfcContext);
     return(nfcContext != NULL);
 }
@@ -36,6 +37,9 @@ QString RFID::get14aUID()
         nfc_exit(nfcContext);
         return "";
     }
+    nfc_device_set_property_bool(nfcPn532, NP_FORCE_ISO14443_B, false);
+    nfc_device_set_property_bool(nfcPn532, NP_FORCE_ISO14443_A, true);
+    nfc_device_set_property_bool(nfcPn532, NP_HANDLE_CRC, true);
     const nfc_modulation nmMifare =
     {
         .nmt = NMT_ISO14443A,
@@ -60,25 +64,36 @@ QString RFID::getIDCard_CNUID()
     };
     uint8_t recvBuf[20] = {0};
     QString result;
+    nfc_target targets[20];
     if(!init()) return "";
     if(!openDevice())
     {
         nfc_exit(nfcContext);
         return "";
     }
-    const nfc_modulation nmIDCard_CN =
+    qDebug() << "-------------start config------------";
+    nfc_device_set_property_bool(nfcPn532, NP_FORCE_ISO14443_A, false);
+    nfc_device_set_property_bool(nfcPn532, NP_FORCE_ISO14443_B, true);
+    nfc_device_set_property_bool(nfcPn532, NP_HANDLE_CRC, true);
+    //nfc_device_set_property_bool(nfcPn532, NP_HANDLE_PARITY, false);
+    nfc_modulation nmIDCard_CN =
     {
         .nmt = NMT_ISO14443B,
         .nbr = NBR_106
     };
-    //nfc_device_set_property_bool(nfcPn532, NP_EASY_FRAMING, false);
+    nfc_device_set_property_bool(nfcPn532, NP_EASY_FRAMING, false);
     nfc_device_set_property_bool(nfcPn532, NP_ACTIVATE_FIELD, true);
-    nfc_initiator_transceive_bytes(nfcPn532, cmd[0], 5, recvBuf, 20, 0);
+    nfc_device_set_property_int(nfcPn532, NP_TIMEOUT_ATR, 1000);
+    nfc_device_set_property_int(nfcPn532, NP_TIMEOUT_COM, 3000);
+
+    qDebug() << "-------------start transceive------------";
+    nfc_initiator_transceive_bytes(nfcPn532, cmd[0], 3, recvBuf, 20, 0);
     qDebug() << hex2str(recvBuf, 20);
-    nfc_initiator_transceive_bytes(nfcPn532, cmd[1], 7, recvBuf, 20, 0);
+    nfc_initiator_transceive_bytes(nfcPn532, cmd[1], 9, recvBuf, 20, 0);
     qDebug() << hex2str(recvBuf, 20);
-    nfc_initiator_transceive_bytes(nfcPn532, cmd[2], 11, recvBuf, 20, 0);
+    nfc_initiator_transceive_bytes(nfcPn532, cmd[2], 5, recvBuf, 20, 0);
     qDebug() << hex2str(recvBuf, 20);
+    qDebug() << "-------------stop transceive三------------";
     nfc_device_set_property_bool(nfcPn532, NP_ACTIVATE_FIELD, false);
 
     nfc_close(nfcPn532);

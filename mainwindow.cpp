@@ -6,8 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    cap = new cv::VideoCapture;
-    videoFrame = new cv::Mat;
+    faceRecognizer = new FaceRecognizer(this);
 }
 
 MainWindow::~MainWindow()
@@ -18,32 +17,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_camOpenButton_clicked()
 {
-    int timeoutCounter = 0;
-    qDebug() << "Open Camera:" << cap->open(0);
-    while(!cap->isOpened() && timeoutCounter < 100)
-    {
-        QThread::sleep(10);
-        timeoutCounter++;
-    }
-    if(!cap->isOpened())
-    {
-        QMessageBox::information(this, "Error", "Can't open the camera.");
-    }
+    faceRecognizer->init({"HDDL", "HDDL"}, {"/home/hdu/test/models/intel/face-detection-adas-0001/FP32/face-detection-adas-0001.xml", "/home/hdu/test/models/intel/facial-landmarks-35-adas-0002/FP32/facial-landmarks-35-adas-0002.xml"});
 }
 
 void MainWindow::on_getFrameButton_clicked()
 {
-    cap->read(*videoFrame);
-    ui->imgLabel->setPixmap(QPixmap::fromImage(QImage((const unsigned char*)videoFrame->data, videoFrame->cols, videoFrame->rows, videoFrame->step, QImage::Format_RGB888)));
+    while(true)
+    {
+        ui->imgLabel->setPixmap(QPixmap::fromImage(faceRecognizer->getResult()));
+        QApplication::processEvents();
+    }
 }
 
 void MainWindow::on_camCloseButton_clicked()
 {
-    cap->release();
+    QApplication::exit();
 }
 
 void MainWindow::on_readCardButton_clicked()
 {
-//    qDebug() << RFID::get14aUID();
-    RFID::getIDCard_CNUID();
+    qDebug() << RFID::get14aUID();
+    //RFID::getIDCard_CNUID();
 }

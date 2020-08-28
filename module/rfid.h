@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QDebug>
 #include <QString>
+#include <QThread>
+#include <QApplication>
 #include <nfc/nfc.h>
 
 class RFID : public QObject

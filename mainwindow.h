@@ -6,10 +6,8 @@
 #include <QThread>
 #include <QMessageBox>
 
-#include <opencv2/opencv.hpp>
-#include <nfc/nfc.h>
-
 #include "module/rfid.h"
+#include "module/facerecognizer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -37,8 +35,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    cv::VideoCapture* cap;
-    cv::Mat* videoFrame;
-    QImage* imgFrame;
+    FaceRecognizer* faceRecognizer;
 };
 #endif // MAINWINDOW_H

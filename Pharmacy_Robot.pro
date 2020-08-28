@@ -18,10 +18,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    module/detectors.cpp \
+    module/facerecognizer.cpp \
     module/rfid.cpp
 
 HEADERS += \
     mainwindow.h \
+    module/detectors.hpp \
+    module/facerecognizer.h \
     module/rfid.h
 
 FORMS += \
@@ -34,8 +38,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 INCLUDEPATH += \
     /opt/intel/openvino/opencv/include/opencv2 \
-    /opt/intel/openvino/opencv/include
+    /opt/intel/openvino/opencv/include \
+    /opt/intel/openvino/deployment_tools/inference_engine/include \
+    /opt/intel/openvino/deployment_tools/inference_engine/samples/common \
+    /opt/intel/openvino/deployment_tools/ngraph/include
 
 LIBS += \
     /opt/intel/openvino/opencv/lib/libopencv*.so \
-    /usr/lib/libnfc.so
+    /usr/lib/libnfc.so \
+    /opt/intel/openvino_2020.4.287/deployment_tools/inference_engine/lib/intel64/*.so \
+    /opt/intel/openvino_2020.4.287/deployment_tools/ngraph/lib/libngraph.so
