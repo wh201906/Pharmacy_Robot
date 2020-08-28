@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     faceRecognizer = new FaceRecognizer(this);
+    reader = new RFID;
 }
 
 MainWindow::~MainWindow()
@@ -36,6 +37,6 @@ void MainWindow::on_camCloseButton_clicked()
 
 void MainWindow::on_readCardButton_clicked()
 {
-    qDebug() << RFID::get14aUID();
+    qDebug() << reader->get14aUID();
     //RFID::getIDCard_CNUID();
 }

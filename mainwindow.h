@@ -36,5 +36,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     FaceRecognizer* faceRecognizer;
+    RFID* reader;
 };
 #endif // MAINWINDOW_H

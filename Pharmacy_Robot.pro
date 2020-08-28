@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -45,6 +45,5 @@ INCLUDEPATH += \
 
 LIBS += \
     /opt/intel/openvino/opencv/lib/libopencv*.so \
-    /usr/lib/libnfc.so \
     /opt/intel/openvino_2020.4.287/deployment_tools/inference_engine/lib/intel64/*.so \
     /opt/intel/openvino_2020.4.287/deployment_tools/ngraph/lib/libngraph.so
