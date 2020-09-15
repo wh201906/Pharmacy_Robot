@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     faceRecognizer = new FaceRecognizer(this);
     reader = new RFID;
+    servoDriver = new ServoDriver;
 }
 
 MainWindow::~MainWindow()
@@ -45,4 +46,9 @@ void MainWindow::on_saveImageButton_clicked()
 {
     qDebug() << "./img/" + QDateTime::currentDateTime().toString(Qt::ISODate) + ".jpg";
     qDebug() << faceRecognizer->getFrame().save("./img/" + QDateTime::currentDateTime().toString(Qt::ISODate) + ".jpg");
+}
+
+void MainWindow::on_testButton_clicked()
+{
+    servoDriver->move_sendMotion(ServoDriver::MOVE_AXIS_X, -100000, 50);
 }

@@ -37,9 +37,12 @@ private slots:
 
     void on_saveImageButton_clicked();
 
+    void on_testButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     FaceRecognizer* faceRecognizer;
     RFID* reader;
+    ServoDriver* servoDriver;
 };
 #endif // MAINWINDOW_H

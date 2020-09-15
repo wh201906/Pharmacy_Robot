@@ -49,4 +49,6 @@ INCLUDEPATH += \
 LIBS += \
     /opt/intel/openvino/opencv/lib/libopencv*.so \
     /opt/intel/openvino_2020.4.287/deployment_tools/inference_engine/lib/intel64/*.so \
-    /opt/intel/openvino_2020.4.287/deployment_tools/ngraph/lib/libngraph.so
+    /opt/intel/openvino_2020.4.287/deployment_tools/ngraph/lib/libngraph.so \
+#    /opt/intel/openvino_2020.4.287/deployment_tools/inference_engine/external/tbb/lib/libtbb.so.2 \
+#    /opt/intel/openvino_2020.4.287/opencv/lib/libopencv_core.so.4.4
