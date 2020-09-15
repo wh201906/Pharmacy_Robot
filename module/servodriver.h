@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSerialPort>
+#include <QDebug>
 
 class ServoDriver : public QObject
 {
@@ -10,6 +11,15 @@ class ServoDriver : public QObject
 public:
     explicit ServoDriver(QObject *parent = nullptr);
 
+    enum Move_Axis
+    {
+        MOVE_AXIS_X,
+        MOVE_AXIS_Y,
+        MOVE_AXIS_Z,
+    };
+
+    bool move_connect(const QString &port);
+    bool move_sendMotion(Move_Axis axis, float step, float speed);
 signals:
 
 private:
