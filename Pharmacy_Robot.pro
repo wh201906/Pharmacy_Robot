@@ -42,6 +42,7 @@ INCLUDEPATH += \
     /opt/intel/openvino/deployment_tools/inference_engine/include \
     /opt/intel/openvino/deployment_tools/inference_engine/samples/common \
     /opt/intel/openvino/deployment_tools/ngraph/include
+#    /usr/include/python3.6
 
 LIBS += \
     /opt/intel/openvino/opencv/lib/libopencv*.so \

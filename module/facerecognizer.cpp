@@ -68,7 +68,7 @@ QImage FaceRecognizer::getResult(RecogResult* result)
         write2ptr(result, RecogResult(RESULT_ERROR));
         return QImage();
     }
-    cv::Mat resultFrame = *currentFrame;
+    cv::Mat resultFrame = currentFrame->clone();
     cv::Rect faceArea = detect();
     if(faceArea.area() < 10)
     {

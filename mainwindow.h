@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QMessageBox>
+#include <QDateTime>
 
 #include "module/rfid.h"
 #include "module/facerecognizer.h"
@@ -32,6 +33,8 @@ private slots:
     void on_camCloseButton_clicked();
 
     void on_readCardButton_clicked();
+
+    void on_saveImageButton_clicked();
 
 private:
     Ui::MainWindow *ui;

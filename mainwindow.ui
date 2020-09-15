@@ -46,6 +46,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="saveImageButton">
+        <property name="text">
+         <string>SaveImage</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="readCardButton">
         <property name="text">
          <string>readCard</string>

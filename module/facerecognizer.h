@@ -7,6 +7,7 @@
 #include <QRect>
 #include <QImage>
 #include <QDebug>
+#include <QFile>
 
 #include <inference_engine.hpp>
 #include <ie_iextension.h>
