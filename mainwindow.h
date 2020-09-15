@@ -1,4 +1,4 @@
-#ifndef MAINWINDOW_H
+﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
@@ -9,6 +9,7 @@
 
 #include "module/rfid.h"
 #include "module/facerecognizer.h"
+#include "module/servodriver.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui

@@ -20,13 +20,15 @@ SOURCES += \
     mainwindow.cpp \
     module/detectors.cpp \
     module/facerecognizer.cpp \
-    module/rfid.cpp
+    module/rfid.cpp \
+    module/servodriver.cpp
 
 HEADERS += \
     mainwindow.h \
     module/detectors.hpp \
     module/facerecognizer.h \
-    module/rfid.h
+    module/rfid.h \
+    module/servodriver.h
 
 FORMS += \
     mainwindow.ui
