@@ -41,3 +41,31 @@ bool ServoDriver::move_stop()
 {
     return moveController->write(QByteArray::fromHex("O5 00 07 01 F3")) != -1;
 }
+
+bool ServoDriver::rotate_connect(const QString& port)
+{
+    rotateController->setPortName(port);
+    rotateController->setBaudRate(115200);
+    rotateController->setDataBits(QSerialPort::Data8);
+    rotateController->setStopBits(QSerialPort::OneStop);
+    rotateController->setParity(QSerialPort::NoParity);
+
+    return rotateController->open(QSerialPort::ReadWrite);
+}
+
+bool ServoDriver::rotate_suck()
+{
+//    return rotateController->write("#3P2500T100\r\n") != -1;
+    return rotate_sendMotion(ROTATE_SERVO_SUCKER, 2500, 100);
+}
+
+bool ServoDriver::rotate_stopSuck()
+{
+    return rotate_sendMotion(ROTATE_SERVO_SUCKER, 1500, 100);
+}
+
+bool ServoDriver::rotate_sendMotion(Rotate_Servo servo, int pos, int speed)
+{
+    QString cmd = "#" + QString::number(servo) + "P" + QString::number(pos) + "S" + QString::number(speed) + "\r\n";
+    return rotateController->write(cmd.toLocal8Bit());
+}

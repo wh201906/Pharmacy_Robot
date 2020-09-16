@@ -2,6 +2,7 @@
 #define SERVOTESTDIALOG_H
 
 #include <QDialog>
+#include <QDebug>
 #include "module/servodriver.h"
 
 namespace Ui
