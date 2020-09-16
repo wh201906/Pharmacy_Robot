@@ -21,17 +21,20 @@ SOURCES += \
     module/detectors.cpp \
     module/facerecognizer.cpp \
     module/rfid.cpp \
-    module/servodriver.cpp
+    module/servodriver.cpp \
+    servotestdialog.cpp
 
 HEADERS += \
     mainwindow.h \
     module/detectors.hpp \
     module/facerecognizer.h \
     module/rfid.h \
-    module/servodriver.h
+    module/servodriver.h \
+    servotestdialog.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    servotestdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -10,6 +10,7 @@
 #include "module/rfid.h"
 #include "module/facerecognizer.h"
 #include "module/servodriver.h"
+#include "servotestdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -39,9 +40,7 @@ private slots:
 
     void on_testButton_clicked();
 
-    void on_connectButton_clicked();
-
-    void on_pushButton_clicked();
+    void on_servoTestButton_clicked();
 
 private:
     Ui::MainWindow *ui;

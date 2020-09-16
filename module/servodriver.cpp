@@ -13,6 +13,7 @@ bool ServoDriver::move_connect(const QString& port)
     moveController->setDataBits(QSerialPort::Data8);
     moveController->setStopBits(QSerialPort::OneStop);
     moveController->setParity(QSerialPort::NoParity);
+
     return moveController->open(QSerialPort::ReadWrite);
 }
 

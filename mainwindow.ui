@@ -60,13 +60,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="connectButton">
-        <property name="text">
-         <string>ConnectButton</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="testButton">
         <property name="text">
          <string>Test</string>
@@ -74,9 +67,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="servoTestButton">
         <property name="text">
-         <string>Stop</string>
+         <string>ServoTest</string>
         </property>
        </widget>
       </item>
