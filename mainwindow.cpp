@@ -50,5 +50,15 @@ void MainWindow::on_saveImageButton_clicked()
 
 void MainWindow::on_testButton_clicked()
 {
-    servoDriver->move_sendMotion(ServoDriver::MOVE_AXIS_X, -100000, 50);
+    servoDriver->move_sendMotion(ServoDriver::MOVE_AXIS_Z, -100, 2);
+}
+
+void MainWindow::on_connectButton_clicked()
+{
+    qDebug() << servoDriver->move_connect("/dev/ttyUSB0");
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    servoDriver->move_stop();
 }

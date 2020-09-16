@@ -20,6 +20,7 @@ public:
 
     bool move_connect(const QString &port);
     bool move_sendMotion(Move_Axis axis, float step, float speed);
+    bool move_stop();
 signals:
 
 private:

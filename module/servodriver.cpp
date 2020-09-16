@@ -19,8 +19,8 @@ bool ServoDriver::move_connect(const QString& port)
 bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
 {
     QByteArray targetData;
-    int checkSum = 0;
-    int checkByte = 0;
+    quint8 checkSum = 0;
+    quint16 checkByte = 0;
     targetData += QByteArray::fromHex("0E 00 04 01");
     targetData += QByteArray::fromRawData((char*)&axis, 1);
     targetData += QByteArray::fromRawData((char*)&step, 4);
@@ -29,14 +29,14 @@ bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
     for(quint8 byte : targetData)
     {
         checkSum += byte;
-        checkSum %= 0xFF;
     }
-    for(int i = 2; i <= 5; i++)
-    {
-        checkByte = 0xff - checkSum + i;
-        checkByte %= 0xFF;
-        qDebug() << (targetData + QByteArray::fromRawData((char*)&checkByte, 1)).toHex();
-    }
+    checkByte = 256 - checkSum;
+    checkByte &= 0xFF;
+    targetData += QByteArray::fromRawData((char*)&checkByte, 1);
+    return moveController->write(targetData) != -1;
+}
 
-    return true;
+bool ServoDriver::move_stop()
+{
+    return moveController->write(QByteArray::fromHex("O5 00 07 01 F3")) != -1;
 }
