@@ -69,12 +69,12 @@ void ServoTestDialog::on_rotateStopSuckButton_clicked()
     qDebug() << driver->rotate_stopSuck();
 }
 
-void ServoTestDialog::on_rotateTopSlider_sliderReleased()
+void ServoTestDialog::on_rotateTopSlider_sliderMoved(int position)
 {
-    qDebug() << driver->rotate_sendMotion(ServoDriver::ROTATE_SERVO_TOP, ui->rotateTopSlider->pos().y());
+    qDebug() << driver->rotate_sendMotion(ServoDriver::ROTATE_SERVO_TOP, position);
 }
 
-void ServoTestDialog::on_rotateBottomSlider_sliderReleased()
+void ServoTestDialog::on_rotateBottomSlider_sliderMoved(int position)
 {
-    qDebug() << driver->rotate_sendMotion(ServoDriver::ROTATE_SERVO_BOTTOM, ui->rotateBottomSlider->pos().y());
+    qDebug() << driver->rotate_sendMotion(ServoDriver::ROTATE_SERVO_BOTTOM, position);
 }

@@ -35,6 +35,16 @@ private slots:
 
     void on_moveStopButton_clicked();
 
+    void on_rotateConnectButton_clicked();
+
+    void on_rotateSuckButton_clicked();
+
+    void on_rotateStopSuckButton_clicked();
+
+    void on_rotateTopSlider_sliderMoved(int position);
+
+    void on_rotateBottomSlider_sliderMoved(int position);
+
 private:
     Ui::ServoTestDialog *ui;
     ServoDriver* driver;

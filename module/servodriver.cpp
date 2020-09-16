@@ -56,12 +56,12 @@ bool ServoDriver::rotate_connect(const QString& port)
 bool ServoDriver::rotate_suck()
 {
 //    return rotateController->write("#3P2500T100\r\n") != -1;
-    return rotate_sendMotion(ROTATE_SERVO_SUCKER, 2500, 100);
+    return rotate_sendMotion(ROTATE_SERVO_SUCKER, 2500, 5000);
 }
 
 bool ServoDriver::rotate_stopSuck()
 {
-    return rotate_sendMotion(ROTATE_SERVO_SUCKER, 1500, 100);
+    return rotate_sendMotion(ROTATE_SERVO_SUCKER, 1500, 5000);
 }
 
 bool ServoDriver::rotate_sendMotion(Rotate_Servo servo, int pos, int speed)
