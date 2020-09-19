@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QDebug>
+#include <QKeyEvent>
 #include "module/servodriver.h"
 
 namespace Ui
@@ -49,6 +50,10 @@ private slots:
 
     void on_rotateBottomEdit_returnPressed();
 
+    void on_moveStateButton_clicked();
+
+protected:
+    bool eventFilter(QObject *, QEvent *) override;
 private:
     Ui::ServoTestDialog *ui;
     ServoDriver* driver;

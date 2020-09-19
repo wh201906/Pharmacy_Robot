@@ -10,6 +10,9 @@
     <height>446</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::ClickFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>ServoTest</string>
   </property>
@@ -123,6 +126,13 @@
         <widget class="QLineEdit" name="moveSpeedEdit">
          <property name="text">
           <string>200</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="moveStateButton">
+         <property name="text">
+          <string>GetState</string>
          </property>
         </widget>
        </item>

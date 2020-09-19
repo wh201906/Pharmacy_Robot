@@ -7,6 +7,7 @@ ServoTestDialog::ServoTestDialog(ServoDriver* driver, QWidget *parent) :
 {
     ui->setupUi(this);
     this->driver = driver;
+    installEventFilter(this);
 }
 
 ServoTestDialog::~ServoTestDialog()
@@ -91,4 +92,18 @@ void ServoTestDialog::on_rotateBottomEdit_returnPressed()
 {
     qDebug() << driver->rotate_sendMotion(ServoDriver::ROTATE_SERVO_BOTTOM, ui->rotateBottomEdit->text().toInt());
     ui->rotateBottomSlider->setValue(ui->rotateBottomEdit->text().toInt());
+}
+
+void ServoTestDialog::on_moveStateButton_clicked()
+{
+    driver->move_getState();
+}
+
+bool ServoTestDialog::eventFilter(QObject *watched, QEvent *event)
+{
+    if(event->type() == QEvent::KeyPress)
+    {
+        QKeyEvent* keyEvent = (QKeyEvent*)event;
+        qDebug() << keyEvent;
+    }
 }

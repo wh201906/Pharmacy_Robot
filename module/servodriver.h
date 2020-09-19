@@ -25,6 +25,25 @@ public:
         ROTATE_SERVO_SUCKER,
     };
 
+    struct Move_State
+    {
+        bool isValid = false;
+        double x;
+        double y;
+        double z;
+        Move_State(double x, double y, double z)
+        {
+            isValid = true;
+            this->x = x;
+            this->y = y;
+            this->z = z;
+        }
+        Move_State()
+        {
+            isValid = false;
+        }
+    };
+
     bool move_connect(const QString& port);
     bool move_sendMotion(Move_Axis axis, float step, float speed);
     bool move_stop();
@@ -32,6 +51,7 @@ public:
     bool rotate_suck();
     bool rotate_stopSuck();
     bool rotate_sendMotion(Rotate_Servo servo, int pos, int speed = 1000);
+    ServoDriver::Move_State move_getState();
 signals:
 
 private:
