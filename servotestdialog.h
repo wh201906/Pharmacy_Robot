@@ -45,6 +45,10 @@ private slots:
 
     void on_rotateBottomSlider_sliderMoved(int position);
 
+    void on_rotateTopEdit_returnPressed();
+
+    void on_rotateBottomEdit_returnPressed();
+
 private:
     Ui::ServoTestDialog *ui;
     ServoDriver* driver;
