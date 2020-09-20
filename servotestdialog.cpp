@@ -105,11 +105,81 @@ void ServoTestDialog::on_moveStateButton_clicked()
 
 bool ServoTestDialog::eventFilter(QObject *watched, QEvent *event)
 {
+    // for move servo:
+    // use WASD to control the X axis and Y axis
+    // use RF to control the Z axis
+    // use [] to change the step
+    // use ,. to change the speed
+    //
+    // for rotate servo:
+    // use Up/Down to control the top servo
+    // use Left/Right to control the bottom servo
+    // use 0/1 to control the sucker
+
     if(event->type() == QEvent::KeyPress)
     {
         QKeyEvent* keyEvent = (QKeyEvent*)event;
         qDebug() << keyEvent;
+        switch(keyEvent->key())
+        {
+        case Qt::Key_W:
+            on_moveXNButton_clicked();
+            break;
+        case Qt::Key_A:
+            on_moveYPButton_clicked();
+            break;
+        case Qt::Key_S:
+            on_moveXPButton_clicked();
+            break;
+        case Qt::Key_D:
+            on_moveYNButton_clicked();
+            break;
+        case Qt::Key_F:
+            on_moveZPButton_clicked();
+            break;
+        case Qt::Key_R:
+            on_moveZNButton_clicked();
+            break;
+        case Qt::Key_BracketLeft:
+            ui->moveStepEdit->setText(QString::number(ui->moveStepEdit->text().toInt() - 5));
+            break;
+        case Qt::Key_BracketRight:
+            ui->moveStepEdit->setText(QString::number(ui->moveStepEdit->text().toInt() + 5));
+            break;
+        case Qt::Key_Comma:
+            ui->moveSpeedEdit->setText(QString::number(ui->moveSpeedEdit->text().toInt() - 5));
+            break;
+        case Qt::Key_Period:
+            ui->moveSpeedEdit->setText(QString::number(ui->moveSpeedEdit->text().toInt() + 5));
+            break;
+        case Qt::Key_Space:
+            on_moveStopButton_clicked();
+            break;
+        case Qt::Key_0:
+            on_rotateStopSuckButton_clicked();
+            break;
+        case Qt::Key_1:
+            on_rotateSuckButton_clicked();
+            break;
+        case Qt::Key_Up:
+            ui->rotateTopEdit->setText(QString::number(ui->rotateTopEdit->text().toInt() - 10));
+            on_rotateTopEdit_returnPressed();
+            break;
+        case Qt::Key_Down:
+            ui->rotateTopEdit->setText(QString::number(ui->rotateTopEdit->text().toInt() + 10));
+            on_rotateTopEdit_returnPressed();
+            break;
+        case Qt::Key_Left:
+            ui->rotateBottomEdit->setText(QString::number(ui->rotateBottomEdit->text().toInt() - 10));
+            on_rotateBottomEdit_returnPressed();
+            break;
+        case Qt::Key_Right:
+            ui->rotateBottomEdit->setText(QString::number(ui->rotateBottomEdit->text().toInt() + 10));
+            on_rotateBottomEdit_returnPressed();
+            break;
+        }
     }
+    return QDialog::eventFilter(watched, event);
 }
 
 void ServoTestDialog::on_moveDisconnectButton_clicked()
