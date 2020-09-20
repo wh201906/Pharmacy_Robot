@@ -17,6 +17,19 @@ bool ServoDriver::move_connect(const QString& port)
     return moveController->open(QSerialPort::ReadWrite);
 }
 
+void ServoDriver::move_disconnect()
+{
+    moveController->close();
+}
+
+QString ServoDriver::move_getPort()
+{
+    if(moveController->isOpen())
+        return moveController->portName();
+    else
+        return "";
+}
+
 bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
 {
     QByteArray targetData;
@@ -85,6 +98,19 @@ bool ServoDriver::rotate_connect(const QString& port)
     rotateController->setParity(QSerialPort::NoParity);
 
     return rotateController->open(QSerialPort::ReadWrite);
+}
+
+void ServoDriver::rotate_disconnect()
+{
+    rotateController->close();
+}
+
+QString ServoDriver::rotate_getPort()
+{
+    if(rotateController->isOpen())
+        return rotateController->portName();
+    else
+        return "";
 }
 
 bool ServoDriver::rotate_suck()

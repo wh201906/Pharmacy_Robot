@@ -52,6 +52,10 @@ public:
     bool rotate_stopSuck();
     bool rotate_sendMotion(Rotate_Servo servo, int pos, int speed = 1000);
     ServoDriver::Move_State move_getState();
+    QString move_getPort();
+    QString rotate_getPort();
+    void move_disconnect();
+    void rotate_disconnect();
 signals:
 
 private:

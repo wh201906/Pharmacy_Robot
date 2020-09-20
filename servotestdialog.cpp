@@ -8,6 +8,10 @@ ServoTestDialog::ServoTestDialog(ServoDriver* driver, QWidget *parent) :
     ui->setupUi(this);
     this->driver = driver;
     installEventFilter(this);
+    if(driver->move_getPort() != "")
+        ui->movePortEdit->setText(driver->move_getPort());
+    if(driver->rotate_getPort() != "")
+        ui->rotatePortEdit->setText(driver->rotate_getPort());
 }
 
 ServoTestDialog::~ServoTestDialog()
@@ -106,4 +110,14 @@ bool ServoTestDialog::eventFilter(QObject *watched, QEvent *event)
         QKeyEvent* keyEvent = (QKeyEvent*)event;
         qDebug() << keyEvent;
     }
+}
+
+void ServoTestDialog::on_moveDisconnectButton_clicked()
+{
+    driver->move_disconnect();
+}
+
+void ServoTestDialog::on_rotateDisconnectButton_clicked()
+{
+    driver->rotate_disconnect();
 }

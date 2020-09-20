@@ -52,6 +52,10 @@ private slots:
 
     void on_moveStateButton_clicked();
 
+    void on_moveDisconnectButton_clicked();
+
+    void on_rotateDisconnectButton_clicked();
+
 protected:
     bool eventFilter(QObject *, QEvent *) override;
 private:
