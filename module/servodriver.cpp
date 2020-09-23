@@ -73,20 +73,11 @@ ServoDriver::Move_State ServoDriver::move_getState()
     }
     if(rawState.size() != 62)
         return Move_State();
-    for(int i = 16; i > 12; i--)
-        tmpBytes += rawState.at(i);
-    qDebug() << tmpBytes;
-    qDebug() << tmpBytes.toHex();
-    qDebug() << ("0x" + tmpBytes.toHex()).toLongLong(nullptr, 16);
-    tmpBytes.clear();
-    for(int i = 13; i < 17; i++)
-        tmpBytes += rawState.at(i);
-    qDebug() << ("0x" + tmpBytes.toHex()).toLongLong(nullptr, 16);
-    qDebug() << rawState.mid(17, 4).toHex().toInt(nullptr, 16);
-    qDebug() << rawState.mid(21, 4).toHex().toInt(nullptr, 16);
-    qDebug() << rawState.at(5);
-
-
+    const qint32* rawX = (const qint32*)((const void*)(rawState.data() + 13));
+    const qint32* rawY = (const qint32*)((const void*)(rawState.data() + 17));
+    const qint32* rawZ = (const qint32*)((const void*)(rawState.data() + 21));
+    qDebug() << *rawX << *rawY << *rawZ;
+    return Move_State(rawState.at(5) == 0x04, *rawX / 100000.0, *rawY / 100000.0, *rawZ / 100000.0);
 }
 
 bool ServoDriver::rotate_connect(const QString& port)

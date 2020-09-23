@@ -36,6 +36,9 @@
        </item>
        <item>
         <widget class="QLineEdit" name="movePortEdit">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
          <property name="text">
           <string>ttyUSB</string>
          </property>
@@ -45,6 +48,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QPushButton" name="moveConnectButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Connect</string>
            </property>
@@ -52,6 +58,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="moveDisconnectButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Disconnect</string>
            </property>
@@ -63,6 +72,9 @@
         <layout class="QGridLayout" name="gridLayout">
          <item row="2" column="0">
           <widget class="QPushButton" name="moveZPButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Z+</string>
            </property>
@@ -70,6 +82,9 @@
          </item>
          <item row="0" column="0">
           <widget class="QPushButton" name="moveXPButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>X+</string>
            </property>
@@ -77,6 +92,9 @@
          </item>
          <item row="1" column="0">
           <widget class="QPushButton" name="moveYPButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Y+</string>
            </property>
@@ -84,6 +102,9 @@
          </item>
          <item row="0" column="1">
           <widget class="QPushButton" name="moveXNButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>X-</string>
            </property>
@@ -91,6 +112,9 @@
          </item>
          <item row="2" column="1">
           <widget class="QPushButton" name="moveZNButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Z-</string>
            </property>
@@ -98,6 +122,9 @@
          </item>
          <item row="1" column="1">
           <widget class="QPushButton" name="moveYNButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Y-</string>
            </property>
@@ -107,6 +134,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="moveStopButton">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Stop</string>
          </property>
@@ -121,6 +151,9 @@
        </item>
        <item>
         <widget class="QLineEdit" name="moveStepEdit">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
          <property name="text">
           <string>10</string>
          </property>
@@ -135,6 +168,9 @@
        </item>
        <item>
         <widget class="QLineEdit" name="moveSpeedEdit">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
          <property name="text">
           <string>200</string>
          </property>
@@ -142,6 +178,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="moveStateButton">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>GetState</string>
          </property>
@@ -166,6 +205,9 @@
        </item>
        <item>
         <widget class="QLineEdit" name="rotatePortEdit">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
          <property name="text">
           <string>ttyUSB</string>
          </property>
@@ -175,6 +217,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
           <widget class="QPushButton" name="rotateConnectButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Connect</string>
            </property>
@@ -182,6 +227,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="rotateDisconnectButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Disconnect</string>
            </property>
@@ -193,6 +241,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
           <widget class="QPushButton" name="rotateSuckButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Suck</string>
            </property>
@@ -200,6 +251,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="rotateStopSuckButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string>Stop</string>
            </property>
@@ -234,7 +288,7 @@
             <number>100</number>
            </property>
            <property name="value">
-            <number>1500</number>
+            <number>2350</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -249,8 +303,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
            <property name="text">
-            <string>1500</string>
+            <string>2350</string>
            </property>
           </widget>
          </item>
@@ -283,7 +340,7 @@
             <number>100</number>
            </property>
            <property name="value">
-            <number>1500</number>
+            <number>1550</number>
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -298,8 +355,11 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
            <property name="text">
-            <string>1500</string>
+            <string>1550</string>
            </property>
           </widget>
          </item>
@@ -335,51 +395,8 @@
      </property>
     </spacer>
    </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>ServoTestDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>ServoTestDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

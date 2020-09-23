@@ -46,12 +46,15 @@ INCLUDEPATH += \
     /opt/intel/openvino/opencv/include \
     /opt/intel/openvino/deployment_tools/inference_engine/include \
     /opt/intel/openvino/deployment_tools/inference_engine/samples/common \
-    /opt/intel/openvino/deployment_tools/ngraph/include
-#    /usr/include/python3.6
+    /opt/intel/openvino/deployment_tools/ngraph/include \
+    /usr/include/python3.6 \
 
 LIBS += \
     /opt/intel/openvino/opencv/lib/libopencv*.so \
     /opt/intel/openvino_2020.4.287/deployment_tools/inference_engine/lib/intel64/*.so \
     /opt/intel/openvino_2020.4.287/deployment_tools/ngraph/lib/libngraph.so \
+    /usr/lib/python3.6/config-3.6m-x86_64-linux-gnu/libpython3.6.so \
 #    /opt/intel/openvino_2020.4.287/deployment_tools/inference_engine/external/tbb/lib/libtbb.so.2 \
 #    /opt/intel/openvino_2020.4.287/opencv/lib/libopencv_core.so.4.4
+
+DISTFILES +=

@@ -49,6 +49,7 @@ public:
     template<class T>
     void write2ptr(T *ptr, T value);
     QImage frame2image(cv::Mat &frame);
+    cv::Mat getRawFrame();
 signals:
 
 private:

@@ -62,6 +62,8 @@ void ServoTestDialog::on_moveStopButton_clicked()
 void ServoTestDialog::on_rotateConnectButton_clicked()
 {
     qDebug() << driver->rotate_connect(ui->rotatePortEdit->text());
+    on_rotateTopEdit_returnPressed();
+    on_rotateBottomEdit_returnPressed();
 }
 
 void ServoTestDialog::on_rotateSuckButton_clicked()
@@ -100,7 +102,8 @@ void ServoTestDialog::on_rotateBottomEdit_returnPressed()
 
 void ServoTestDialog::on_moveStateButton_clicked()
 {
-    driver->move_getState();
+    ServoDriver::Move_State st = driver->move_getState();
+    qDebug() << st.isValid << st.isRunning << st.x << st.y << st.z;
 }
 
 bool ServoTestDialog::eventFilter(QObject *watched, QEvent *event)

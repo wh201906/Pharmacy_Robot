@@ -28,12 +28,14 @@ public:
     struct Move_State
     {
         bool isValid = false;
+        bool isRunning = false;
         double x;
         double y;
         double z;
-        Move_State(double x, double y, double z)
+        Move_State(bool running, double x, double y, double z)
         {
             isValid = true;
+            this->isRunning = running;
             this->x = x;
             this->y = y;
             this->z = z;

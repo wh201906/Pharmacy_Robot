@@ -61,6 +61,11 @@ QImage FaceRecognizer::getFrame()
         return frame2image(*currentFrame);
 }
 
+cv::Mat FaceRecognizer::getRawFrame()
+{
+    return *currentFrame;
+}
+
 QImage FaceRecognizer::getResult(RecogResult* result)
 {
     if(!camera->read(*currentFrame))
