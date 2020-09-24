@@ -58,11 +58,25 @@ void MainWindow::on_testButton_clicked()
     {
         qDebug() << "cannot open python!";
     }
+    PyRun_SimpleString("import sys");
+    PyRun_SimpleString("sys.path.append('/home/hdu/chineseocr_lite-onnx')");
 
-    PyObject *pModule, *pFunc, *pArgs;
-    pModule = PyImport_ImportModule("/home/hdu/test/new/chineseocr_lite-onnx/detect_mine.py");
-    pFunc = PyObject_GetAttrString(pModule, "detect_ocr");
-
+    PyObject *pModule, *pFunc, *pArgs, *pDict;
+    pModule = PyImport_ImportModule("detect_mine");
+    if(!pModule)
+    {
+        qDebug() << "cannot open python file!";
+    }
+    pDict = PyModule_GetDict(pModule);
+    if(!pDict)
+    {
+        qDebug() << "cannot find dictionary!";
+    }
+    pFunc = PyDict_GetItemString(pDict, "detect_ocr");
+    if(!pFunc || !PyCallable_Check(pFunc))
+    {
+        qDebug() << "cannot find function!";
+    }
     pArgs = PyTuple_New(1);
     PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/result.png"));
 
@@ -70,7 +84,13 @@ void MainWindow::on_testButton_clicked()
     pReturn = PyEval_CallObject(pFunc, pArgs);
 
     QString result;
+    PyArg_Parse(pReturn, "s", &result);
+    //long result = PyLong_AsLong(pReturn);
 
+    Py_DecRef(pModule);
+    Py_DecRef(pFunc);
+
+    Py_Finalize();
 
 }
 

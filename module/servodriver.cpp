@@ -32,6 +32,7 @@ QString ServoDriver::move_getPort()
 
 bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
 {
+
     QByteArray targetData;
     quint8 checkSum = 0;
     quint16 checkByte = 0;
