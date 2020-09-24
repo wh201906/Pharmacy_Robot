@@ -39,22 +39,22 @@ bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
         {
             if(step > 0 && currSt.x + step > 0)
                 step = -currSt.x;
-            else if(step < 0 && currSt.x + step < MAX_X)
-                step = MAX_X - currSt.x;
+            else if(step < 0 && currSt.x + step < MOVE_MAX_X)
+                step = MOVE_MAX_X - currSt.x;
         }
         if(axis == MOVE_AXIS_Y)
         {
             if(step < 0 && currSt.y + step < 0)
                 step = -currSt.y;
-            else if(step > 0 && currSt.y + step > MAX_Y)
-                step = MAX_Y - currSt.y;
+            else if(step > 0 && currSt.y + step > MOVE_MAX_Y)
+                step = MOVE_MAX_Y - currSt.y;
         }
         if(axis == MOVE_AXIS_Z)
         {
             if(step > 0 && currSt.z + step > 0)
                 step = -currSt.z;
-            else if(step < 0 && currSt.z + step < MAX_Z)
-                step = MAX_Z - currSt.z;
+            else if(step < 0 && currSt.z + step < MOVE_MAX_Z)
+                step = MOVE_MAX_Z - currSt.z;
         }
     }
 
@@ -116,6 +116,42 @@ ServoDriver::Move_State ServoDriver::move_getState()
     return Move_State(rawState.at(5) == 0x04, *rawX / 100000.0, *rawY / 100000.0, *rawZ / 100000.0);
 }
 
+void ServoDriver::move_goto(float x, float y, float speed)
+{
+    Move_State currSt = move_getState();
+    float dx = x - currSt.x;
+    float dy = y = currSt.y;
+    move_sendMotion(MOVE_AXIS_Z, 0, speed);
+    move_sendMotion(MOVE_AXIS_X, dx, speed);
+    move_sendMotion(MOVE_AXIS_Y, dy, speed);
+}
+
+bool ServoDriver::move_waitMotionFinished(int msec)
+{
+    int time = 0;
+    while(move_getState().isRunning && time <= msec)
+    {
+        QThread::sleep(20);
+        QApplication::processEvents();
+        time += 20;
+    }
+    return time <= msec;
+}
+
+void ServoDriver::throwDrug()
+{
+    float speed = 30;
+    move_sendMotion(MOVE_AXIS_Z, 0, speed);
+    move_waitMotionFinished();
+    rotate_sendMotion(ROTATE_SERVO_BOTTOM, 1020, 1000);
+    move_sendMotion(MOVE_AXIS_X, 0, speed);
+    move_sendMotion(MOVE_AXIS_Y, 678, speed);
+    move_waitMotionFinished();
+    rotate_stopSuck();
+    QThread::sleep(500);
+    rotate_initPos();
+}
+
 bool ServoDriver::rotate_connect(const QString& port)
 {
     rotateController->setPortName(port);
@@ -155,4 +191,14 @@ bool ServoDriver::rotate_sendMotion(Rotate_Servo servo, int pos, int speed)
 {
     QString cmd = "#" + QString::number(servo) + "P" + QString::number(pos) + "S" + QString::number(speed) + "\r\n";
     return rotateController->write(cmd.toLocal8Bit());
+}
+
+bool ServoDriver::rotate_initPos(bool withSucker)
+{
+    bool res = true;
+    res &= rotate_sendMotion(ROTATE_SERVO_BOTTOM, ROTATE_INIT_BOTTOM);
+    res &= rotate_sendMotion(ROTATE_SERVO_TOP, ROTATE_INIT_TOP);
+    if(withSucker)
+        res &= rotate_sendMotion(ROTATE_SERVO_SUCKER, 1500);
+    return res;
 }

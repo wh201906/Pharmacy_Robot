@@ -5,12 +5,20 @@
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QDebug>
+#include <QThread>
+#include <QApplication>
 
 class ServoDriver : public QObject
 {
     Q_OBJECT
 public:
     explicit ServoDriver(QObject *parent = nullptr);
+
+    const double MOVE_MAX_X = -697;
+    const double MOVE_MAX_Y = 950;
+    const double MOVE_MAX_Z = -100;
+    const int ROTATE_INIT_BOTTOM = 1550;
+    const int ROTATE_INIT_TOP = 2320;
 
     enum Move_Axis
     {
@@ -60,6 +68,11 @@ public:
     void rotate_disconnect();
     void move_setForceRange(bool st);
     bool move_getForceRange();
+    void move_goto(float x, float y, float speed);
+    void throwDrug();
+    bool move_waitMotionFinished(int msec = 15000);
+    bool rotate_initPos(bool withSucker = false);
+
 signals:
 
 private:
@@ -69,9 +82,7 @@ private:
     quint16 rotateID;
 
     bool move_forceRange = true;
-    const double MAX_X = -697;
-    const double MAX_Y = 950;
-    const double MAX_Z = -100;
+    const QList<double> layerHight = {-2.016, -127.216, -273.379, -424.317, -550.007, -697};
 };
 
 

@@ -13,6 +13,10 @@ ServoTestDialog::ServoTestDialog(ServoDriver* driver, QWidget *parent) :
     if(driver->rotate_getPort() != "")
         ui->rotatePortEdit->setText(driver->rotate_getPort());
     ui->moveForceRangeBox->setChecked(driver->move_getForceRange());
+    ui->rotateTopEdit->setText(QString::number(driver->ROTATE_INIT_TOP));
+    ui->rotateTopSlider->setValue(driver->ROTATE_INIT_TOP);
+    ui->rotateBottomEdit->setText(QString::number(driver->ROTATE_INIT_BOTTOM));
+    ui->rotateBottomSlider->setValue(driver->ROTATE_INIT_BOTTOM);
 }
 
 ServoTestDialog::~ServoTestDialog()
