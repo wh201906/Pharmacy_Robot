@@ -186,6 +186,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QCheckBox" name="moveForceRangeBox">
+         <property name="text">
+          <string>ForceRange</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>

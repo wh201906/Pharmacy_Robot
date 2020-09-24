@@ -32,6 +32,31 @@ QString ServoDriver::move_getPort()
 
 bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
 {
+    if(move_forceRange)
+    {
+        Move_State currSt = move_getState();
+        if(axis == MOVE_AXIS_X)
+        {
+            if(step > 0 && currSt.x + step > 0)
+                step = -currSt.x;
+            else if(step < 0 && currSt.x + step < MAX_X)
+                step = MAX_X - currSt.x;
+        }
+        if(axis == MOVE_AXIS_Y)
+        {
+            if(step < 0 && currSt.y + step < 0)
+                step = -currSt.y;
+            else if(step > 0 && currSt.y + step > MAX_Y)
+                step = MAX_Y - currSt.y;
+        }
+        if(axis == MOVE_AXIS_Z)
+        {
+            if(step > 0 && currSt.z + step > 0)
+                step = -currSt.z;
+            else if(step < 0 && currSt.z + step < MAX_Z)
+                step = MAX_Z - currSt.z;
+        }
+    }
 
     QByteArray targetData;
     quint8 checkSum = 0;
@@ -54,6 +79,16 @@ bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
 bool ServoDriver::move_stop()
 {
     return moveController->write(QByteArray::fromHex("O5 00 07 01 F3")) != -1;
+}
+
+void ServoDriver::move_setForceRange(bool st)
+{
+    move_forceRange = st;
+}
+
+bool ServoDriver::move_getForceRange()
+{
+    return move_forceRange;
 }
 
 ServoDriver::Move_State ServoDriver::move_getState()

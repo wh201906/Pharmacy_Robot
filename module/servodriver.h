@@ -58,6 +58,8 @@ public:
     QString rotate_getPort();
     void move_disconnect();
     void rotate_disconnect();
+    void move_setForceRange(bool st);
+    bool move_getForceRange();
 signals:
 
 private:
@@ -65,6 +67,11 @@ private:
     QSerialPort* rotateController;
     quint16 moveID;
     quint16 rotateID;
+
+    bool move_forceRange = true;
+    const double MAX_X = -697;
+    const double MAX_Y = 950;
+    const double MAX_Z = -100;
 };
 
 

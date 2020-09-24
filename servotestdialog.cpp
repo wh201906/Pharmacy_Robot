@@ -12,6 +12,7 @@ ServoTestDialog::ServoTestDialog(ServoDriver* driver, QWidget *parent) :
         ui->movePortEdit->setText(driver->move_getPort());
     if(driver->rotate_getPort() != "")
         ui->rotatePortEdit->setText(driver->rotate_getPort());
+    ui->moveForceRangeBox->setChecked(driver->move_getForceRange());
 }
 
 ServoTestDialog::~ServoTestDialog()
@@ -193,4 +194,9 @@ void ServoTestDialog::on_moveDisconnectButton_clicked()
 void ServoTestDialog::on_rotateDisconnectButton_clicked()
 {
     driver->rotate_disconnect();
+}
+
+void ServoTestDialog::on_moveForceRangeBox_stateChanged(int arg1)
+{
+    driver->move_setForceRange(arg1 == Qt::Checked);
 }

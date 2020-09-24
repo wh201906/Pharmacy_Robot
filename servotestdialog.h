@@ -56,6 +56,8 @@ private slots:
 
     void on_rotateDisconnectButton_clicked();
 
+    void on_moveForceRangeBox_stateChanged(int arg1);
+
 protected:
     bool eventFilter(QObject *, QEvent *) override;
 private:
