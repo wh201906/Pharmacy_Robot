@@ -1,0 +1,91 @@
+#include "movecontroller.h"
+
+MoveController::MoveController(QObject* parent) : QSerialPort(parent)
+{
+    stateTimer = new QTimer();
+    stateTimer->setInterval(10);
+    buffer = new QByteArray;
+    state = new Move_Controller_State;
+    qRegisterMetaType<Move_Servo_State>("Move_Servo_State");
+    qRegisterMetaType<Move_Controller_State>("Move_Controller_State");
+    setBaudRate(115200);
+    setDataBits(QSerialPort::Data8);
+    setStopBits(QSerialPort::OneStop);
+    setParity(QSerialPort::NoParity);
+    connect(stateTimer, &QTimer::timeout, this, &MoveController::onTimeout);
+    connect(this, &MoveController::readyRead, this, &MoveController::onReadyRead);
+}
+
+void MoveController::openSlot(MoveController::OpenMode mode)
+{
+    if(open(mode))
+    {
+        stateTimer->start();
+        state->isOpened = true;
+        state->portName = portName();
+    }
+    else
+    {
+        state->isOpened = false;
+        emit controllerError();
+    }
+    emit currState(*state);
+}
+
+void MoveController::closeSlot()
+{
+    stateTimer->stop();
+    state->isOpened = false;
+    close();
+    emit currState(*state);
+}
+
+void MoveController::onTimeout()
+{
+    if(!state->isOpened)
+    {
+        stateTimer->stop();
+    }
+    write(QByteArray::fromHex("O5 00 03 01 F7"));
+}
+
+void MoveController::onReadyRead()
+{
+    buffer->append(readAll());
+    if(buffer->size() != 62 && *buffer != QByteArray::fromHex("65 72 72 6F 72"))
+    {
+        return;
+    }
+    if(buffer->size() == 62)
+    {
+        const qint32* rawX = (const qint32*)((const void*)(buffer->data() + 13));
+        const qint32* rawY = (const qint32*)((const void*)(buffer->data() + 17));
+        const qint32* rawZ = (const qint32*)((const void*)(buffer->data() + 21));
+        bool isRunning = buffer->at(5) == 0x04;
+        if(!isRunning)
+            stateTimer->stop();
+        emit newServoState(Move_Servo_State(isRunning, *rawX / 100000.0, *rawY / 100000.0, *rawZ / 100000.0));
+    }
+    else
+    {
+        emit controllerError();
+    }
+    buffer->clear();
+}
+
+void MoveController::writeSlot(QByteArray data)
+{
+    if(write(data) == -1)
+        emit controllerError();
+    stateTimer->start();
+}
+
+void MoveController::getControllerState()
+{
+    emit currState(*state);
+}
+
+void MoveController::setPortNameSlot(QString name)
+{
+    setPortName(name);
+}

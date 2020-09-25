@@ -204,3 +204,13 @@ void ServoTestDialog::on_moveForceRangeBox_stateChanged(int arg1)
 {
     driver->move_setForceRange(arg1 == Qt::Checked);
 }
+
+void ServoTestDialog::on_throwDrugButton_clicked()
+{
+    driver->throwDrug();
+}
+
+void ServoTestDialog::on_moveToButton_clicked()
+{
+    driver->move_goto(ui->movePosXEdit->text().toFloat(), ui->movePosYEdit->text().toFloat(), 75);
+}

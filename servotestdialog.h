@@ -58,6 +58,10 @@ private slots:
 
     void on_moveForceRangeBox_stateChanged(int arg1);
 
+    void on_throwDrugButton_clicked();
+
+    void on_moveToButton_clicked();
+
 protected:
     bool eventFilter(QObject *, QEvent *) override;
 private:

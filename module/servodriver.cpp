@@ -13,8 +13,8 @@ bool ServoDriver::move_connect(const QString& port)
     moveController->setDataBits(QSerialPort::Data8);
     moveController->setStopBits(QSerialPort::OneStop);
     moveController->setParity(QSerialPort::NoParity);
-
     return moveController->open(QSerialPort::ReadWrite);
+    currState = move_getState();
 }
 
 void ServoDriver::move_disconnect()
@@ -32,29 +32,29 @@ QString ServoDriver::move_getPort()
 
 bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
 {
+    bool res = true;
     if(move_forceRange)
     {
-        Move_State currSt = move_getState();
         if(axis == MOVE_AXIS_X)
         {
-            if(step > 0 && currSt.x + step > 0)
-                step = -currSt.x;
-            else if(step < 0 && currSt.x + step < MOVE_MAX_X)
-                step = MOVE_MAX_X - currSt.x;
+            if(step > 0 && currState.x + step > 0)
+                step = -currState.x;
+            else if(step < 0 && currState.x + step < MOVE_MAX_X)
+                step = MOVE_MAX_X - currState.x;
         }
         if(axis == MOVE_AXIS_Y)
         {
-            if(step < 0 && currSt.y + step < 0)
-                step = -currSt.y;
-            else if(step > 0 && currSt.y + step > MOVE_MAX_Y)
-                step = MOVE_MAX_Y - currSt.y;
+            if(step < 0 && currState.y + step < 0)
+                step = -currState.y;
+            else if(step > 0 && currState.y + step > MOVE_MAX_Y)
+                step = MOVE_MAX_Y - currState.y;
         }
         if(axis == MOVE_AXIS_Z)
         {
-            if(step > 0 && currSt.z + step > 0)
-                step = -currSt.z;
-            else if(step < 0 && currSt.z + step < MOVE_MAX_Z)
-                step = MOVE_MAX_Z - currSt.z;
+            if(step > 0 && currState.z + step > 0)
+                step = -currState.z;
+            else if(step < 0 && currState.z + step < MOVE_MAX_Z)
+                step = MOVE_MAX_Z - currState.z;
         }
     }
 
@@ -73,12 +73,18 @@ bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
     checkByte = 256 - checkSum;
     checkByte &= 0xFF;
     targetData += QByteArray::fromRawData((char*)&checkByte, 1);
-    return moveController->write(targetData) != -1;
+    qDebug() << "write:" << targetData.toHex();
+    res &= moveController->write(targetData) != -1;
+//    if()
+    return res;
 }
 
 bool ServoDriver::move_stop()
 {
-    return moveController->write(QByteArray::fromHex("O5 00 07 01 F3")) != -1;
+    bool res = moveController->write(QByteArray::fromHex("O5 00 07 01 F3")) != -1;
+    currState = move_getState();
+    stopUsed = true;
+    return res;
 }
 
 void ServoDriver::move_setForceRange(bool st)
@@ -94,7 +100,7 @@ bool ServoDriver::move_getForceRange()
 ServoDriver::Move_State ServoDriver::move_getState()
 {
     QByteArray rawState, tmpBytes;
-    moveController->clear();
+    moveController->readAll();
     if(moveController->write(QByteArray::fromHex("O5 00 03 01 F7")) == -1)
         return Move_State();
     if(!moveController->waitForBytesWritten(500))
@@ -118,10 +124,10 @@ ServoDriver::Move_State ServoDriver::move_getState()
 
 void ServoDriver::move_goto(float x, float y, float speed)
 {
-    Move_State currSt = move_getState();
-    float dx = x - currSt.x;
-    float dy = y = currSt.y;
-    move_sendMotion(MOVE_AXIS_Z, 0, speed);
+    float dx = x - currState.x;
+    float dy = y - currState.y;
+    float dz = -currState.z;
+    move_sendMotion(MOVE_AXIS_Z, dz, speed);
     move_sendMotion(MOVE_AXIS_X, dx, speed);
     move_sendMotion(MOVE_AXIS_Y, dy, speed);
 }

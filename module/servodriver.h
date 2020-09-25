@@ -80,6 +80,8 @@ private:
     QSerialPort* rotateController;
     quint16 moveID;
     quint16 rotateID;
+    Move_State currState;
+    bool stopUsed = false;
 
     bool move_forceRange = true;
     const QList<double> layerHight = {-2.016, -127.216, -273.379, -424.317, -550.007, -697};
