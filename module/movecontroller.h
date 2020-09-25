@@ -5,6 +5,7 @@
 #include <QSerialPort>
 #include <QTimer>
 #include <QDebug>
+#include <QThread>
 
 class MoveController : public QSerialPort
 {
@@ -50,10 +51,13 @@ private:
     QTimer* stateTimer;
     QByteArray* buffer;
     Move_Controller_State* state;
+    int readerState = 0;
+    bool writeSuccessful = false;
 signals:
     void newServoState(Move_Servo_State st);
     void controllerError();
     void currState(Move_Controller_State st);
+    void MotionSent();
 
 };
 

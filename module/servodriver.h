@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QApplication>
+#include <QTime>
 #include "module/movecontroller.h"
 
 class ServoDriver : public QObject
@@ -53,6 +54,7 @@ public:
     bool move_waitMotionFinished(int msec = 15000);
     bool rotate_initPos(bool withSucker = false);
 
+    bool move_waitMotionSent(int msec = 1000);
 signals:
     void move_setPortName(QString name);
     void move_connectPort(MoveController::OpenMode mode);
@@ -63,6 +65,7 @@ private slots:
     void move_onControllerErrorOccurred();
     void move_onServoStateFetched(MoveController::Move_Servo_State st);
     void move_onControllerStateFetched(MoveController::Move_Controller_State st);
+    void move_onMotionSent();
 private:
     MoveController* moveController;
     QSerialPort* rotateController;
@@ -71,6 +74,7 @@ private:
     quint16 rotateID;
     MoveController::Move_Servo_State* servoState;
     MoveController::Move_Controller_State* controllerState;
+    bool motionSentFlag = false;
 
     bool move_forceRange = true;
     const QList<double> layerHight = {-2.016, -127.216, -273.379, -424.317, -550.007, -697};

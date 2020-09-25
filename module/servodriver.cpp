@@ -17,7 +17,13 @@ ServoDriver::ServoDriver(QObject *parent) : QObject(parent)
     connect(this, &ServoDriver::move_connectPort, moveController, &MoveController::openSlot);
     connect(moveController, &MoveController::controllerError, this, &ServoDriver::move_onControllerErrorOccurred);
     connect(moveController, &MoveController::currState, this, &ServoDriver::move_onControllerStateFetched);
-    connect(moveController, &MoveController::MoveController::newServoState, this, &ServoDriver::move_onServoStateFetched);
+    connect(moveController, &MoveController::newServoState, this, &ServoDriver::move_onServoStateFetched);
+    connect(moveController, &MoveController::MotionSent, this, &ServoDriver::move_onMotionSent);
+}
+
+void ServoDriver::move_onMotionSent()
+{
+    motionSentFlag = true;
 }
 
 void ServoDriver::move_onControllerErrorOccurred()
@@ -106,6 +112,7 @@ void ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
     checkByte &= 0xFF;
     targetData += QByteArray::fromRawData((char*)&checkByte, 1);
     qDebug() << "write:" << targetData.toHex();
+    motionSentFlag = false;
     emit move_write(targetData);
 }
 
@@ -135,33 +142,67 @@ void ServoDriver::move_goto(float x, float y, float speed)
     float dy = y - servoState->y;
     float dz = -servoState->z;
     move_sendMotion(MOVE_AXIS_Z, dz, speed);
+    qDebug() << move_waitMotionSent();
+    qDebug() << move_waitMotionFinished();
     move_sendMotion(MOVE_AXIS_X, dx, speed);
     move_sendMotion(MOVE_AXIS_Y, dy, speed);
 }
 
 bool ServoDriver::move_waitMotionFinished(int msec)
 {
-    int time = 0;
-    while(servoState->isRunning && time <= msec)
+    QTime targetTime = QTime::currentTime().addMSecs(300);
+    QTime currTime = QTime::currentTime();
+    while(currTime < targetTime)
     {
-        QThread::sleep(20);
         QApplication::processEvents();
-        time += 20;
+        currTime = QTime::currentTime();
     }
-    return time <= msec;
+    targetTime = QTime::currentTime().addMSecs(msec);
+    currTime = QTime::currentTime();
+    while(servoState->isRunning && currTime < targetTime)
+    {
+        QApplication::processEvents();
+        currTime = QTime::currentTime();
+    }
+    return currTime < targetTime;
+}
+
+bool ServoDriver::move_waitMotionSent(int msec)
+{
+    QTime targetTime = QTime::currentTime().addMSecs(300);
+    QTime currTime = QTime::currentTime();
+    while(currTime < targetTime)
+    {
+        QApplication::processEvents();
+        currTime = QTime::currentTime();
+    }
+    targetTime = QTime::currentTime().addMSecs(msec);
+    currTime = QTime::currentTime();
+    while(!motionSentFlag && currTime < targetTime)
+    {
+        QApplication::processEvents();
+        currTime = QTime::currentTime();
+    }
+    motionSentFlag = false;
+    return currTime < targetTime;
 }
 
 void ServoDriver::throwDrug()
 {
+    float dx = -servoState->x;
+    float dy = 678 - servoState->y;
+    float dz = -servoState->z;
     float speed = 30;
-    move_sendMotion(MOVE_AXIS_Z, 0, speed);
+    move_sendMotion(MOVE_AXIS_Z, dz, speed);
+    move_waitMotionSent();
     move_waitMotionFinished();
     rotate_sendMotion(ROTATE_SERVO_BOTTOM, 1020, 1000);
-    move_sendMotion(MOVE_AXIS_X, 0, speed);
-    move_sendMotion(MOVE_AXIS_Y, 678, speed);
+    move_sendMotion(MOVE_AXIS_X, dx, speed);
+    move_waitMotionSent();
+    move_sendMotion(MOVE_AXIS_Y, dy, speed);
+    move_waitMotionSent();
     move_waitMotionFinished();
     rotate_stopSuck();
-    QThread::sleep(500);
     rotate_initPos();
 }
 

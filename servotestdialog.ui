@@ -188,6 +188,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="moveForceRangeBox">
+         <property name="focusPolicy">
+          <enum>Qt::ClickFocus</enum>
+         </property>
          <property name="text">
           <string>ForceRange</string>
          </property>
@@ -392,15 +395,26 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
-          <widget class="QLineEdit" name="movePosXEdit"/>
+          <widget class="QLineEdit" name="movePosXEdit">
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+          </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="movePosYEdit"/>
+          <widget class="QLineEdit" name="movePosYEdit">
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
        <item>
         <widget class="QPushButton" name="moveToButton">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>Move</string>
          </property>
@@ -408,6 +422,9 @@
        </item>
        <item>
         <widget class="QPushButton" name="throwDrugButton">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
          <property name="text">
           <string>ThrowDrug</string>
          </property>

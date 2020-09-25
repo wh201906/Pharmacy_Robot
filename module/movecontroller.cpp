@@ -5,7 +5,7 @@ MoveController::MoveController(QThread* targetThread, QObject* parent) : QSerial
     moveToThread(targetThread);
     stateTimer = new QTimer();
     stateTimer->moveToThread(targetThread);
-    stateTimer->setInterval(10);
+    stateTimer->setInterval(100);
     buffer = new QByteArray;
     state = new Move_Controller_State;
     qRegisterMetaType<Move_Servo_State>("Move_Servo_State");
@@ -20,7 +20,7 @@ MoveController::MoveController(QThread* targetThread, QObject* parent) : QSerial
 
 void MoveController::openSlot(MoveController::OpenMode mode)
 {
-    if(open(mode))
+    if(isOpen() || open(mode))
     {
         stateTimer->start();
         state->isOpened = true;
@@ -54,32 +54,62 @@ void MoveController::onTimeout()
 void MoveController::onReadyRead()
 {
     buffer->append(readAll());
-    qDebug() << "raw:" << buffer->toHex();
-    if(buffer->size() != 62 && *buffer != QByteArray::fromHex("65 72 72 6F 72"))
+    if(buffer->at(0) != 0x3E)
+        qDebug() << "raw:" << buffer->toHex();
+    if(buffer->contains(0x65))
     {
-        return;
+        if(!buffer->contains(QByteArray::fromHex("65 72 72 6F 72")) && readerState < 2)
+        {
+            readerState++;
+            return;
+        }
+        else if(buffer->contains(QByteArray::fromHex("65 72 72 6F 72")))
+            emit controllerError();
     }
-    if(buffer->size() == 62)
+    else if(buffer->contains(0x06))
     {
-        const qint32* rawX = (const qint32*)((const void*)(buffer->data() + 13));
-        const qint32* rawY = (const qint32*)((const void*)(buffer->data() + 17));
-        const qint32* rawZ = (const qint32*)((const void*)(buffer->data() + 21));
-        bool isRunning = buffer->at(5) == 0x04;
-        if(!isRunning)
-            stateTimer->stop();
-        emit newServoState(Move_Servo_State(isRunning, *rawX / 100000.0, *rawY / 100000.0, *rawZ / 100000.0));
+        if(!buffer->contains(QByteArray::fromHex("06 00 04 01 00 F5")) && readerState < 2)
+        {
+            readerState++;
+            return;
+        }
+        else if(buffer->contains(QByteArray::fromHex("06 00 04 01 00 F5")))
+        {
+            writeSuccessful = true;
+            emit MotionSent();
+        }
     }
-    else
+    else if(buffer->at(0) == 0x3E)
     {
-        emit controllerError();
+        if(buffer->size() < 62)
+            return;
+        else if(buffer->size() == 62)
+        {
+            const qint32* rawX = (const qint32*)((const void*)(buffer->data() + 13));
+            const qint32* rawY = (const qint32*)((const void*)(buffer->data() + 17));
+            const qint32* rawZ = (const qint32*)((const void*)(buffer->data() + 21));
+            bool isRunning = buffer->at(5) == 0x04;
+            emit newServoState(Move_Servo_State(isRunning, *rawX / 100000.0, *rawY / 100000.0, *rawZ / 100000.0));
+        }
     }
     buffer->clear();
+    readerState = 0;
 }
 
 void MoveController::writeSlot(QByteArray data)
 {
-    if(write(data) == -1)
-        emit controllerError();
+    stateTimer->stop();
+    writeSuccessful = false;
+    for(int i = 0; i < 20 && !writeSuccessful; i++)
+    {
+        if(write(data) == -1)
+        {
+            emit controllerError();
+            break;
+        }
+        waitForReadyRead(10);
+    }
+
     stateTimer->start();
 }
 
