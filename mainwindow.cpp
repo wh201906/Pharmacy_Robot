@@ -77,15 +77,24 @@ void MainWindow::on_testButton_clicked()
     {
         qDebug() << "cannot find function!";
     }
+    pFunc = PyObject_GetAttrString(pModule, "detect_ocr");
+
     pArgs = PyTuple_New(1);
     PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/result.png"));
 
     PyObject *pReturn = NULL;
     pReturn = PyEval_CallObject(pFunc, pArgs);
-
-    QString result;
-    PyArg_Parse(pReturn, "s", &result);
-    //long result = PyLong_AsLong(pReturn);
+    /*
+        QString result;
+        PyArg_Parse(pReturn, "s", &result);
+        //long result = PyLong_AsLong(pReturn);
+    */
+    int result;
+    PyArg_Parse(pReturn, "i", &result);
+    /*
+    char result[5][50] = {'\0'};
+    PyArg_Parse(pReturn, "s", result);
+    */
 
     Py_DecRef(pModule);
     Py_DecRef(pFunc);
