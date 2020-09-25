@@ -4,12 +4,13 @@
 #include <QObject>
 #include <QSerialPort>
 #include <QTimer>
+#include <QDebug>
 
 class MoveController : public QSerialPort
 {
     Q_OBJECT
 public:
-    MoveController(QObject *parent = nullptr);
+    explicit MoveController(QThread* targetThread, QObject *parent = nullptr);
     struct Move_Servo_State
     {
         bool isValid = false;

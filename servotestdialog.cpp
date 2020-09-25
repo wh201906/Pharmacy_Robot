@@ -26,42 +26,42 @@ ServoTestDialog::~ServoTestDialog()
 
 void ServoTestDialog::on_moveConnectButton_clicked()
 {
-    qDebug() << driver->move_connect(ui->movePortEdit->text());
+    driver->move_connect(ui->movePortEdit->text());
 }
 
 void ServoTestDialog::on_moveXPButton_clicked()
 {
-    qDebug() << driver->move_sendMotion(ServoDriver::MOVE_AXIS_X, ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
+    driver->move_sendMotion(ServoDriver::MOVE_AXIS_X, ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
 }
 
 void ServoTestDialog::on_moveXNButton_clicked()
 {
-    qDebug() << driver->move_sendMotion(ServoDriver::MOVE_AXIS_X, -ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
+    driver->move_sendMotion(ServoDriver::MOVE_AXIS_X, -ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
 }
 
 void ServoTestDialog::on_moveYPButton_clicked()
 {
-    qDebug() << driver->move_sendMotion(ServoDriver::MOVE_AXIS_Y, ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
+    driver->move_sendMotion(ServoDriver::MOVE_AXIS_Y, ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
 }
 
 void ServoTestDialog::on_moveYNButton_clicked()
 {
-    qDebug() << driver->move_sendMotion(ServoDriver::MOVE_AXIS_Y, -ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
+    driver->move_sendMotion(ServoDriver::MOVE_AXIS_Y, -ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
 }
 
 void ServoTestDialog::on_moveZPButton_clicked()
 {
-    qDebug() << driver->move_sendMotion(ServoDriver::MOVE_AXIS_Z, ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
+    driver->move_sendMotion(ServoDriver::MOVE_AXIS_Z, ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
 }
 
 void ServoTestDialog::on_moveZNButton_clicked()
 {
-    qDebug() << driver->move_sendMotion(ServoDriver::MOVE_AXIS_Z, -ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
+    driver->move_sendMotion(ServoDriver::MOVE_AXIS_Z, -ui->moveStepEdit->text().toFloat(), ui->moveSpeedEdit->text().toFloat());
 }
 
 void ServoTestDialog::on_moveStopButton_clicked()
 {
-    qDebug() << driver->move_stop();
+    driver->move_stop();
 }
 
 void ServoTestDialog::on_rotateConnectButton_clicked()
@@ -107,7 +107,7 @@ void ServoTestDialog::on_rotateBottomEdit_returnPressed()
 
 void ServoTestDialog::on_moveStateButton_clicked()
 {
-    ServoDriver::Move_State st = driver->move_getState();
+    MoveController::Move_Servo_State st = driver->move_getServoState();
     qDebug() << st.isValid << st.isRunning << st.x << st.y << st.z;
 }
 

@@ -1,8 +1,10 @@
 #include "movecontroller.h"
 
-MoveController::MoveController(QObject* parent) : QSerialPort(parent)
+MoveController::MoveController(QThread* targetThread, QObject* parent) : QSerialPort(parent)
 {
+    moveToThread(targetThread);
     stateTimer = new QTimer();
+    stateTimer->moveToThread(targetThread);
     stateTimer->setInterval(10);
     buffer = new QByteArray;
     state = new Move_Controller_State;
@@ -52,6 +54,7 @@ void MoveController::onTimeout()
 void MoveController::onReadyRead()
 {
     buffer->append(readAll());
+    qDebug() << "raw:" << buffer->toHex();
     if(buffer->size() != 62 && *buffer != QByteArray::fromHex("65 72 72 6F 72"))
     {
         return;

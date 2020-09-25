@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include "module/servodriver.h"
+#include "module/movecontroller.h"
 
 namespace Ui
 {

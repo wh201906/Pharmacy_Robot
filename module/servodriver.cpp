@@ -2,59 +2,91 @@
 
 ServoDriver::ServoDriver(QObject *parent) : QObject(parent)
 {
-    moveController = new QSerialPort;
+    moveThread = new QThread;
+    moveController = new MoveController(moveThread);
     rotateController = new QSerialPort;
+    servoState = new MoveController::Move_Servo_State;
+    controllerState = new MoveController::Move_Controller_State;
+    moveThread->start();
+    qRegisterMetaType<MoveController::OpenMode>("MoveController::OpenMode");
+    connect(this, &ServoDriver::move_setPortName, moveController, &MoveController::setPortNameSlot);
+    connect(this, &ServoDriver::move_connectPort, moveController, &MoveController::openSlot);
+    connect(this, &ServoDriver::move_disconnectPort, moveController, &MoveController::closeSlot);
+    connect(this, &ServoDriver::move_write, moveController, &MoveController::writeSlot);
+    connect(this, &ServoDriver::move_getControllerState, moveController, &MoveController::getControllerState);
+    connect(this, &ServoDriver::move_connectPort, moveController, &MoveController::openSlot);
+    connect(moveController, &MoveController::controllerError, this, &ServoDriver::move_onControllerErrorOccurred);
+    connect(moveController, &MoveController::currState, this, &ServoDriver::move_onControllerStateFetched);
+    connect(moveController, &MoveController::MoveController::newServoState, this, &ServoDriver::move_onServoStateFetched);
 }
 
-bool ServoDriver::move_connect(const QString& port)
+void ServoDriver::move_onControllerErrorOccurred()
 {
-    moveController->setPortName(port);
-    moveController->setBaudRate(115200);
-    moveController->setDataBits(QSerialPort::Data8);
-    moveController->setStopBits(QSerialPort::OneStop);
-    moveController->setParity(QSerialPort::NoParity);
-    return moveController->open(QSerialPort::ReadWrite);
-    currState = move_getState();
+
+}
+
+void ServoDriver::move_onServoStateFetched(MoveController::Move_Servo_State st)
+{
+    *servoState = st;
+}
+
+void ServoDriver::move_onControllerStateFetched(MoveController::Move_Controller_State st)
+{
+    *controllerState = st;
+    if(st.isOpened)
+    {
+        qDebug() << QString("move servos connected at %1").arg(st.portName);
+    }
+    else
+    {
+        qDebug() << "move servos disconnected";
+    }
+
+}
+
+void ServoDriver::move_connect(const QString& port)
+{
+    emit move_setPortName(port);
+    emit move_connectPort(MoveController::ReadWrite);
 }
 
 void ServoDriver::move_disconnect()
 {
-    moveController->close();
+    emit move_disconnectPort();
 }
 
 QString ServoDriver::move_getPort()
 {
-    if(moveController->isOpen())
-        return moveController->portName();
+    if(controllerState->isOpened)
+        return controllerState->portName;
     else
         return "";
 }
 
-bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
+void ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
 {
-    bool res = true;
     if(move_forceRange)
     {
         if(axis == MOVE_AXIS_X)
         {
-            if(step > 0 && currState.x + step > 0)
-                step = -currState.x;
-            else if(step < 0 && currState.x + step < MOVE_MAX_X)
-                step = MOVE_MAX_X - currState.x;
+            if(step > 0 && servoState->x + step > 0)
+                step = -servoState->x;
+            else if(step < 0 && servoState->x + step < MOVE_MAX_X)
+                step = MOVE_MAX_X - servoState->x;
         }
         if(axis == MOVE_AXIS_Y)
         {
-            if(step < 0 && currState.y + step < 0)
-                step = -currState.y;
-            else if(step > 0 && currState.y + step > MOVE_MAX_Y)
-                step = MOVE_MAX_Y - currState.y;
+            if(step < 0 && servoState->y + step < 0)
+                step = -servoState->y;
+            else if(step > 0 && servoState->y + step > MOVE_MAX_Y)
+                step = MOVE_MAX_Y - servoState->y;
         }
         if(axis == MOVE_AXIS_Z)
         {
-            if(step > 0 && currState.z + step > 0)
-                step = -currState.z;
-            else if(step < 0 && currState.z + step < MOVE_MAX_Z)
-                step = MOVE_MAX_Z - currState.z;
+            if(step > 0 && servoState->z + step > 0)
+                step = -servoState->z;
+            else if(step < 0 && servoState->z + step < MOVE_MAX_Z)
+                step = MOVE_MAX_Z - servoState->z;
         }
     }
 
@@ -74,17 +106,12 @@ bool ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
     checkByte &= 0xFF;
     targetData += QByteArray::fromRawData((char*)&checkByte, 1);
     qDebug() << "write:" << targetData.toHex();
-    res &= moveController->write(targetData) != -1;
-//    if()
-    return res;
+    emit move_write(targetData);
 }
 
-bool ServoDriver::move_stop()
+void ServoDriver::move_stop()
 {
-    bool res = moveController->write(QByteArray::fromHex("O5 00 07 01 F3")) != -1;
-    currState = move_getState();
-    stopUsed = true;
-    return res;
+    emit move_write(QByteArray::fromHex("O5 00 07 01 F3"));
 }
 
 void ServoDriver::move_setForceRange(bool st)
@@ -97,36 +124,16 @@ bool ServoDriver::move_getForceRange()
     return move_forceRange;
 }
 
-ServoDriver::Move_State ServoDriver::move_getState()
+MoveController::Move_Servo_State ServoDriver::move_getServoState()
 {
-    QByteArray rawState, tmpBytes;
-    moveController->readAll();
-    if(moveController->write(QByteArray::fromHex("O5 00 03 01 F7")) == -1)
-        return Move_State();
-    if(!moveController->waitForBytesWritten(500))
-        return Move_State();
-    if(!moveController->waitForReadyRead(500))
-        return Move_State();
-    rawState = moveController->readAll();
-    if(rawState.size() != 62)
-    {
-        moveController->waitForReadyRead(500);
-        rawState += moveController->readAll();
-    }
-    if(rawState.size() != 62)
-        return Move_State();
-    const qint32* rawX = (const qint32*)((const void*)(rawState.data() + 13));
-    const qint32* rawY = (const qint32*)((const void*)(rawState.data() + 17));
-    const qint32* rawZ = (const qint32*)((const void*)(rawState.data() + 21));
-    qDebug() << *rawX << *rawY << *rawZ;
-    return Move_State(rawState.at(5) == 0x04, *rawX / 100000.0, *rawY / 100000.0, *rawZ / 100000.0);
+    return *servoState;
 }
 
 void ServoDriver::move_goto(float x, float y, float speed)
 {
-    float dx = x - currState.x;
-    float dy = y - currState.y;
-    float dz = -currState.z;
+    float dx = x - servoState->x;
+    float dy = y - servoState->y;
+    float dz = -servoState->z;
     move_sendMotion(MOVE_AXIS_Z, dz, speed);
     move_sendMotion(MOVE_AXIS_X, dx, speed);
     move_sendMotion(MOVE_AXIS_Y, dy, speed);
@@ -135,7 +142,7 @@ void ServoDriver::move_goto(float x, float y, float speed)
 bool ServoDriver::move_waitMotionFinished(int msec)
 {
     int time = 0;
-    while(move_getState().isRunning && time <= msec)
+    while(servoState->isRunning && time <= msec)
     {
         QThread::sleep(20);
         QApplication::processEvents();

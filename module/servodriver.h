@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QApplication>
+#include "module/movecontroller.h"
 
 class ServoDriver : public QObject
 {
@@ -33,35 +34,14 @@ public:
         ROTATE_SERVO_SUCKER,
     };
 
-    struct Move_State
-    {
-        bool isValid = false;
-        bool isRunning = false;
-        double x;
-        double y;
-        double z;
-        Move_State(bool running, double x, double y, double z)
-        {
-            isValid = true;
-            this->isRunning = running;
-            this->x = x;
-            this->y = y;
-            this->z = z;
-        }
-        Move_State()
-        {
-            isValid = false;
-        }
-    };
-
-    bool move_connect(const QString& port);
-    bool move_sendMotion(Move_Axis axis, float step, float speed);
-    bool move_stop();
+    void move_connect(const QString& port);
+    void move_sendMotion(Move_Axis axis, float step, float speed);
+    void move_stop();
     bool rotate_connect(const QString &port);
     bool rotate_suck();
     bool rotate_stopSuck();
     bool rotate_sendMotion(Rotate_Servo servo, int pos, int speed = 1000);
-    ServoDriver::Move_State move_getState();
+    MoveController::Move_Servo_State move_getServoState();
     QString move_getPort();
     QString rotate_getPort();
     void move_disconnect();
@@ -74,14 +54,23 @@ public:
     bool rotate_initPos(bool withSucker = false);
 
 signals:
-
+    void move_setPortName(QString name);
+    void move_connectPort(MoveController::OpenMode mode);
+    void move_disconnectPort();
+    void move_write(QByteArray data);
+    void move_getControllerState();
+private slots:
+    void move_onControllerErrorOccurred();
+    void move_onServoStateFetched(MoveController::Move_Servo_State st);
+    void move_onControllerStateFetched(MoveController::Move_Controller_State st);
 private:
-    QSerialPort* moveController;
+    MoveController* moveController;
     QSerialPort* rotateController;
+    QThread* moveThread;
     quint16 moveID;
     quint16 rotateID;
-    Move_State currState;
-    bool stopUsed = false;
+    MoveController::Move_Servo_State* servoState;
+    MoveController::Move_Controller_State* controllerState;
 
     bool move_forceRange = true;
     const QList<double> layerHight = {-2.016, -127.216, -273.379, -424.317, -550.007, -697};
