@@ -19,8 +19,8 @@ public:
     const double MOVE_MAX_X = -697;
     const double MOVE_MAX_Y = 950;
     const double MOVE_MAX_Z = -100;
-    const int ROTATE_INIT_BOTTOM = 1550;
-    const int ROTATE_INIT_TOP = 2320;
+    const int ROTATE_INIT_BOTTOM = 1600;
+    const int ROTATE_INIT_TOP = 2220;
 
     enum Move_Axis
     {
