@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>124</width>
+    <height>415</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,13 +49,6 @@
        <widget class="QPushButton" name="saveImageButton">
         <property name="text">
          <string>SaveImage</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="readCardButton">
-        <property name="text">
-         <string>readCard</string>
         </property>
        </widget>
       </item>
@@ -107,13 +100,6 @@
       </item>
      </layout>
     </item>
-    <item>
-     <widget class="QLabel" name="imgLabel">
-      <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -121,7 +107,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>124</width>
      <height>28</height>
     </rect>
    </property>

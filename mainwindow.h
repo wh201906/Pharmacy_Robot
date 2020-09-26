@@ -13,7 +13,6 @@
 #include<iostream>
 
 #include "module/rfid.h"
-#include "module/facerecognizer.h"
 #include "module/servodriver.h"
 #include "servotestdialog.h"
 #include "rfidtestdialog.h"
@@ -42,8 +41,6 @@ private slots:
 
     void on_camCloseButton_clicked();
 
-    void on_readCardButton_clicked();
-
     void on_saveImageButton_clicked();
 
     void on_testButton_clicked();
@@ -56,7 +53,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    FaceRecognizer* faceRecognizer;
     RFID* reader;
     ServoDriver* servoDriver;
 };

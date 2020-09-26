@@ -18,8 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    module/detectors.cpp \
-    module/facerecognizer.cpp \
+    module/camera.cpp \
     module/movecontroller.cpp \
     module/rfid.cpp \
     module/servodriver.cpp \
@@ -28,8 +27,7 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
-    module/detectors.hpp \
-    module/facerecognizer.h \
+    module/camera.h \
     module/movecontroller.h \
     module/rfid.h \
     module/servodriver.h \
