@@ -195,7 +195,7 @@ void ServoDriver::throwDrug()
     float dx = -servoState->x;
     float dy = 678 - servoState->y;
     float dz = -servoState->z;
-    move_sendMotion(MOVE_AXIS_Z, dz, 20);
+    move_sendMotion(MOVE_AXIS_Z, dz, 15);
     move_waitMotionSent();
     move_waitMotionFinished();
     rotate_sendMotion(ROTATE_SERVO_BOTTOM, 1020, 500);
@@ -210,15 +210,24 @@ void ServoDriver::throwDrug()
     rotate_initPos();
 }
 
-void ServoDriver::gotoLayer(int layer)
+void ServoDriver::gotoLayer(int layer, float speed)
 {
     float dz = -servoState->z;
-    move_sendMotion(MOVE_AXIS_Z, dz, 100);
+    move_sendMotion(MOVE_AXIS_Z, dz, 150);
     move_waitMotionSent();
     move_waitMotionFinished();
-    move_goto(layerHight[layer], servoState->y, 100);
+    move_goto(layerHight[layer], servoState->y, speed);
     move_waitMotionSent();
     move_waitMotionFinished();
+}
+
+void ServoDriver::fetchDrug(float x, float y, float depth)
+{
+    move_goto(x, y, 200);
+    move_waitMotionSent();
+    move_waitMotionFinished();
+    getDrug(depth);
+    throwDrug();
 }
 
 bool ServoDriver::rotate_connect(const QString& port)

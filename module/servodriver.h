@@ -57,7 +57,8 @@ public:
     bool move_waitMotionSent(int msec = 1000);
     void delay(int ms);
     void getDrug(float distance);
-    void gotoLayer(int layer);
+    void gotoLayer(int layer, float speed = 150);
+    void fetchDrug(float x, float y, float depth = 50);
 signals:
     void move_setPortName(QString name);
     void move_connectPort(MoveController::OpenMode mode);

@@ -215,7 +215,7 @@ void ServoTestDialog::on_throwDrugButton_clicked()
 
 void ServoTestDialog::on_moveToButton_clicked()
 {
-    driver->move_goto(ui->movePosXEdit->text().toFloat(), ui->movePosYEdit->text().toFloat(), 100);
+    driver->move_goto(ui->movePosXEdit->text().toFloat(), ui->movePosYEdit->text().toFloat(), 200);
 }
 
 void ServoTestDialog::on_getDrugButton_clicked()
@@ -225,5 +225,10 @@ void ServoTestDialog::on_getDrugButton_clicked()
 
 void ServoTestDialog::on_goToLayerButton_clicked()
 {
-    driver->gotoLayer(ui->moveLayerBox->value());
+    driver->gotoLayer(ui->moveLayerBox->value(), 200);
+}
+
+void ServoTestDialog::on_fetchDrugButton_clicked()
+{
+    driver->fetchDrug(ui->fetchXEdit->text().toFloat(), ui->fetchYEdit->text().toFloat(), ui->fetchDepthEdit->text().toFloat());
 }

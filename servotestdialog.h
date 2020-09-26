@@ -66,6 +66,8 @@ private slots:
     void on_goToLayerButton_clicked();
 
     void onServoStateUpdated(bool isRunning, double x, double y, double z);
+    void on_fetchDrugButton_clicked();
+
 protected:
     bool eventFilter(QObject *, QEvent *) override;
 private:
