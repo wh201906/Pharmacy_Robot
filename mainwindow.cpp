@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -74,7 +75,7 @@ void MainWindow::on_testButton_clicked()
     pFunc = PyObject_GetAttrString(pModule, "detect_ocr");
 
     pArgs = PyTuple_New(1);
-    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/1.jpg"));
+    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/roi.jpg"));
     /*
         PyObject *pReturn = NULL;
         pReturn = PyEval_CallObject(pFunc, pArgs);
@@ -202,7 +203,7 @@ int* MainWindow::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
             {
                 cv::Mat roiImg = gFrame(roi);
                 imshow("roi", roiImg);
-                imwrite("D:/H D U/VS/007VS/43_drug_detection/chineseocr_lite-onnx/test_imgs/1.jpg", roiImg);
+                imwrite("/home/hdu/roi.jpg", roiImg);
             }
 
             rectangle(gFrame, rect, CV_RGB(255, 0, 0), 2, 8, 0);
