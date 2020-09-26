@@ -80,32 +80,42 @@ void MainWindow::on_testButton_clicked()
     pFunc = PyObject_GetAttrString(pModule, "detect_ocr");
 
     pArgs = PyTuple_New(1);
-    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/result.png"));
-
-    PyObject *pReturn = NULL;
-    pReturn = PyEval_CallObject(pFunc, pArgs);
+    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/1.jpg"));
+    /*
+        PyObject *pReturn = NULL;
+        pReturn = PyEval_CallObject(pFunc, pArgs);
+    */
+    PyEval_CallObject(pFunc, pArgs);
     /*
         QString result;
         PyArg_Parse(pReturn, "s", &result);
         //long result = PyLong_AsLong(pReturn);
-    */
+
     int result;
     PyArg_Parse(pReturn, "i", &result);
-    /*
+
     char result[5][50] = {'\0'};
     PyArg_Parse(pReturn, "s", result);
     */
-
+    /*
+        PyObject* objectsRepresentation = PyObject_Repr(pReturn);
+        const char* result = PyBytes_AsString(objectsRepresentation);
+    */
     Py_DecRef(pModule);
     Py_DecRef(pFunc);
-
     Py_Finalize();
+
+    QFile file("name.txt");
+    file.open(QFile::Text | QFile::ReadOnly);
+    QString result = file.readAll();
+    file.close();
+    qDebug() << result;
 
 }
 
 int* MainWindow::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
 {
-    double scale = 0.5;
+    double scale = 1;//0.5
 
     using namespace cv;
     cv::Size ResImgSiz = cv::Size(frame.cols * scale, frame.rows * scale);
@@ -135,12 +145,12 @@ int* MainWindow::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
     //图像增强
     convertScaleAbs(edgeX_Y_Mat, edgeX_Y_Mat_out);
     //二值化
-    threshold(edgeX_Y_Mat_out, g_edgeX_Y_Mat_out, 180, 255, THRESH_BINARY);//160
+    threshold(edgeX_Y_Mat_out, g_edgeX_Y_Mat_out, 250, 255, THRESH_BINARY);//160//180
     //开运算
     cv::Mat element = getStructuringElement(MORPH_RECT, Size(2, 1), Point(-1, -1));
     morphologyEx(g_edgeX_Y_Mat_out, open, 2, element, Point(-1, -1));
     //闭运算
-    element = getStructuringElement(MORPH_RECT, Size(8, 30), Point(-1, -1));
+    element = getStructuringElement(MORPH_RECT, Size(4, 5), Point(-1, -1));
     morphologyEx(open, close, 3, element, Point(-1, -1));
     ////开运算
     //element = getStructuringElement(MORPH_RECT, Size(5, 4), Point(-1, -1));
@@ -226,5 +236,16 @@ int* MainWindow::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
 void MainWindow::on_servoTestButton_clicked()
 {
     ServoTestDialog dialog(servoDriver);
+    dialog.exec();
+}
+
+void MainWindow::on_testGroupBox_clicked(bool checked)
+{
+    ui->servoTestButton->setVisible(checked);
+}
+
+void MainWindow::on_RFIDTestButton_clicked()
+{
+    RFIDTestDialog dialog(reader);
     dialog.exec();
 }

@@ -9,11 +9,14 @@
 #include <QDateTime>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
+#include<fstream>
+#include<iostream>
 
 #include "module/rfid.h"
 #include "module/facerecognizer.h"
 #include "module/servodriver.h"
 #include "servotestdialog.h"
+#include "rfidtestdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -46,6 +49,10 @@ private slots:
     void on_testButton_clicked();
 
     void on_servoTestButton_clicked();
+
+    void on_testGroupBox_clicked(bool checked);
+
+    void on_RFIDTestButton_clicked();
 
 private:
     Ui::MainWindow *ui;

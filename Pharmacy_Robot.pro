@@ -23,6 +23,7 @@ SOURCES += \
     module/movecontroller.cpp \
     module/rfid.cpp \
     module/servodriver.cpp \
+    rfidtestdialog.cpp \
     servotestdialog.cpp
 
 HEADERS += \
@@ -32,10 +33,12 @@ HEADERS += \
     module/movecontroller.h \
     module/rfid.h \
     module/servodriver.h \
+    rfidtestdialog.h \
     servotestdialog.h
 
 FORMS += \
     mainwindow.ui \
+    rfidtestdialog.ui \
     servotestdialog.ui
 
 # Default rules for deployment.

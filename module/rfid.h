@@ -13,7 +13,7 @@ class RFID : public QObject
 public:
     explicit RFID(QObject *parent = nullptr);
 
-    void init();
+    bool init(const QString &portName);
     QString get14aUID();
 signals:
 
