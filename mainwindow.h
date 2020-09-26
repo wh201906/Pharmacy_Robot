@@ -9,13 +9,13 @@
 #include <QDateTime>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
-#include<fstream>
-#include<iostream>
 
 #include "module/rfid.h"
 #include "module/servodriver.h"
+#include "module/camera.h"
 #include "servotestdialog.h"
 #include "rfidtestdialog.h"
+#include "cameratestdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -51,9 +51,17 @@ private slots:
 
     void on_RFIDTestButton_clicked();
 
+    void on_cameraTestButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     RFID* reader;
     ServoDriver* servoDriver;
+    Camera* camera;
+    QThread* cameraThread;
+
+    ServoTestDialog* servoTestDialog;
+    RFIDTestDialog* myRFIDTestDialog;
+    CameraTestDialog* cameraTestDialog;
 };
 #endif // MAINWINDOW_H

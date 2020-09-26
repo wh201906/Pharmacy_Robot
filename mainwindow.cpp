@@ -8,6 +8,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     reader = new RFID;
     servoDriver = new ServoDriver;
+    cameraThread = new QThread;
+    camera = new Camera(cameraThread);
+    cameraThread->start();
+    servoTestDialog = new ServoTestDialog(servoDriver);
+    servoTestDialog->setModal(false);
+    myRFIDTestDialog = new RFIDTestDialog(reader);
+    myRFIDTestDialog->setModal(false);
+    cameraTestDialog = new CameraTestDialog(camera);
+    cameraTestDialog->setModal(false);
 }
 
 MainWindow::~MainWindow()
@@ -218,19 +227,22 @@ int* MainWindow::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
     return output_rect;
 }
 
-void MainWindow::on_servoTestButton_clicked()
-{
-    ServoTestDialog dialog(servoDriver);
-    dialog.exec();
-}
-
 void MainWindow::on_testGroupBox_clicked(bool checked)
 {
     ui->servoTestButton->setVisible(checked);
 }
 
+void MainWindow::on_servoTestButton_clicked()
+{
+    servoTestDialog->show();
+}
+
 void MainWindow::on_RFIDTestButton_clicked()
 {
-    RFIDTestDialog dialog(reader);
-    dialog.exec();
+    myRFIDTestDialog->show();
+}
+
+void MainWindow::on_cameraTestButton_clicked()
+{
+    cameraTestDialog->show();
 }

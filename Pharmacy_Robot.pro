@@ -16,6 +16,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    cameratestdialog.cpp \
     main.cpp \
     mainwindow.cpp \
     module/camera.cpp \
@@ -26,6 +27,7 @@ SOURCES += \
     servotestdialog.cpp
 
 HEADERS += \
+    cameratestdialog.h \
     mainwindow.h \
     module/camera.h \
     module/movecontroller.h \
@@ -35,6 +37,7 @@ HEADERS += \
     servotestdialog.h
 
 FORMS += \
+    cameratestdialog.ui \
     mainwindow.ui \
     rfidtestdialog.ui \
     servotestdialog.ui

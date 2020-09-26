@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>124</width>
+    <width>133</width>
     <height>415</height>
    </rect>
   </property>
@@ -82,6 +82,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="cameraTestButton">
+           <property name="text">
+            <string>CameraTest</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -107,7 +114,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>124</width>
+     <width>133</width>
      <height>28</height>
     </rect>
    </property>
