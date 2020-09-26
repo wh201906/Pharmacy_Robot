@@ -51,8 +51,6 @@ private slots:
 
     void on_rotateBottomEdit_returnPressed();
 
-    void on_moveStateButton_clicked();
-
     void on_moveDisconnectButton_clicked();
 
     void on_rotateDisconnectButton_clicked();
@@ -63,6 +61,11 @@ private slots:
 
     void on_moveToButton_clicked();
 
+    void on_getDrugButton_clicked();
+
+    void on_goToLayerButton_clicked();
+
+    void onServoStateUpdated(bool isRunning, double x, double y, double z);
 protected:
     bool eventFilter(QObject *, QEvent *) override;
 private:

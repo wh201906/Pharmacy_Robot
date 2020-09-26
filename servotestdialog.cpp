@@ -17,11 +17,20 @@ ServoTestDialog::ServoTestDialog(ServoDriver* driver, QWidget *parent) :
     ui->rotateTopSlider->setValue(driver->ROTATE_INIT_TOP);
     ui->rotateBottomEdit->setText(QString::number(driver->ROTATE_INIT_BOTTOM));
     ui->rotateBottomSlider->setValue(driver->ROTATE_INIT_BOTTOM);
+    connect(driver, &ServoDriver::move_servoStateUpdated, this, &ServoTestDialog::onServoStateUpdated);
 }
 
 ServoTestDialog::~ServoTestDialog()
 {
     delete ui;
+}
+
+void ServoTestDialog::onServoStateUpdated(bool isRunning, double x, double y, double z)
+{
+    ui->moveRunningLabel->setText(isRunning ? "Running" : "Idle");
+    ui->moveXLabel->setText(QString::number(x, 'f', 4));
+    ui->moveYLabel->setText(QString::number(y, 'f', 4));
+    ui->moveZLabel->setText(QString::number(z, 'f', 4));
 }
 
 void ServoTestDialog::on_moveConnectButton_clicked()
@@ -103,12 +112,6 @@ void ServoTestDialog::on_rotateBottomEdit_returnPressed()
 {
     qDebug() << driver->rotate_sendMotion(ServoDriver::ROTATE_SERVO_BOTTOM, ui->rotateBottomEdit->text().toInt());
     ui->rotateBottomSlider->setValue(ui->rotateBottomEdit->text().toInt());
-}
-
-void ServoTestDialog::on_moveStateButton_clicked()
-{
-    MoveController::Move_Servo_State st = driver->move_getServoState();
-    qDebug() << st.isValid << st.isRunning << st.x << st.y << st.z;
 }
 
 bool ServoTestDialog::eventFilter(QObject *watched, QEvent *event)
@@ -212,5 +215,15 @@ void ServoTestDialog::on_throwDrugButton_clicked()
 
 void ServoTestDialog::on_moveToButton_clicked()
 {
-    driver->move_goto(ui->movePosXEdit->text().toFloat(), ui->movePosYEdit->text().toFloat(), 75);
+    driver->move_goto(ui->movePosXEdit->text().toFloat(), ui->movePosYEdit->text().toFloat(), 100);
+}
+
+void ServoTestDialog::on_getDrugButton_clicked()
+{
+    driver->getDrug(50);
+}
+
+void ServoTestDialog::on_goToLayerButton_clicked()
+{
+    driver->gotoLayer(ui->moveLayerBox->value());
 }

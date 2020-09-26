@@ -5,7 +5,7 @@ MoveController::MoveController(QThread* targetThread, QObject* parent) : QSerial
     moveToThread(targetThread);
     stateTimer = new QTimer();
     stateTimer->moveToThread(targetThread);
-    stateTimer->setInterval(100);
+    stateTimer->setInterval(75);
     buffer = new QByteArray;
     state = new Move_Controller_State;
     qRegisterMetaType<Move_Servo_State>("Move_Servo_State");

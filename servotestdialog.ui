@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>502</height>
+    <width>545</width>
+    <height>523</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -155,7 +155,7 @@
           <enum>Qt::ClickFocus</enum>
          </property>
          <property name="text">
-          <string>10</string>
+          <string>200</string>
          </property>
         </widget>
        </item>
@@ -172,17 +172,7 @@
           <enum>Qt::ClickFocus</enum>
          </property>
          <property name="text">
-          <string>200</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="moveStateButton">
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string>GetState</string>
+          <string>50</string>
          </property>
         </widget>
        </item>
@@ -195,6 +185,45 @@
           <string>ForceRange</string>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="moveRunningLabel">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_9">
+         <item>
+          <widget class="QLabel" name="moveXLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="moveYLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="moveZLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -297,9 +326,6 @@
            <property name="pageStep">
             <number>100</number>
            </property>
-           <property name="value">
-            <number>2350</number>
-           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -315,9 +341,6 @@
            </property>
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="text">
-            <string>2350</string>
            </property>
           </widget>
          </item>
@@ -349,9 +372,6 @@
            <property name="pageStep">
             <number>100</number>
            </property>
-           <property name="value">
-            <number>1550</number>
-           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -367,9 +387,6 @@
            </property>
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
-           </property>
-           <property name="text">
-            <string>1550</string>
            </property>
           </widget>
          </item>
@@ -417,6 +434,46 @@
          </property>
          <property name="text">
           <string>Move</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QSpinBox" name="moveLayerBox">
+           <property name="focusPolicy">
+            <enum>Qt::ClickFocus</enum>
+           </property>
+           <property name="suffix">
+            <string/>
+           </property>
+           <property name="prefix">
+            <string>Layer:</string>
+           </property>
+           <property name="maximum">
+            <number>5</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="goToLayerButton">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
+           <property name="text">
+            <string>Go</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QPushButton" name="getDrugButton">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>GetDrug</string>
          </property>
         </widget>
        </item>

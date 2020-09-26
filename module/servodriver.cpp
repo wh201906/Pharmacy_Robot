@@ -34,6 +34,8 @@ void ServoDriver::move_onControllerErrorOccurred()
 void ServoDriver::move_onServoStateFetched(MoveController::Move_Servo_State st)
 {
     *servoState = st;
+    if(st.isValid)
+        emit(move_servoStateUpdated(st.isRunning, st.x, st.y, st.z));
 }
 
 void ServoDriver::move_onControllerStateFetched(MoveController::Move_Controller_State st)
@@ -150,15 +152,9 @@ void ServoDriver::move_goto(float x, float y, float speed)
 
 bool ServoDriver::move_waitMotionFinished(int msec)
 {
-    QTime targetTime = QTime::currentTime().addMSecs(300);
+    delay(100);
+    QTime targetTime = QTime::currentTime().addMSecs(msec);
     QTime currTime = QTime::currentTime();
-    while(currTime < targetTime)
-    {
-        QApplication::processEvents();
-        currTime = QTime::currentTime();
-    }
-    targetTime = QTime::currentTime().addMSecs(msec);
-    currTime = QTime::currentTime();
     while(servoState->isRunning && currTime < targetTime)
     {
         QApplication::processEvents();
@@ -169,15 +165,9 @@ bool ServoDriver::move_waitMotionFinished(int msec)
 
 bool ServoDriver::move_waitMotionSent(int msec)
 {
-    QTime targetTime = QTime::currentTime().addMSecs(300);
+    delay(100);
+    QTime targetTime = QTime::currentTime().addMSecs(msec);
     QTime currTime = QTime::currentTime();
-    while(currTime < targetTime)
-    {
-        QApplication::processEvents();
-        currTime = QTime::currentTime();
-    }
-    targetTime = QTime::currentTime().addMSecs(msec);
-    currTime = QTime::currentTime();
     while(!motionSentFlag && currTime < targetTime)
     {
         QApplication::processEvents();
@@ -187,23 +177,48 @@ bool ServoDriver::move_waitMotionSent(int msec)
     return currTime < targetTime;
 }
 
+void ServoDriver::getDrug(float distance)
+{
+    rotate_initPos();
+    float dz = -servoState->z;
+    move_sendMotion(MOVE_AXIS_Z, dz, 100);
+    move_waitMotionSent();
+    move_waitMotionFinished();
+    move_sendMotion(MOVE_AXIS_Z, -distance, 10);
+    move_waitMotionSent();
+    rotate_suck();
+    move_waitMotionFinished();
+}
+
 void ServoDriver::throwDrug()
 {
     float dx = -servoState->x;
     float dy = 678 - servoState->y;
     float dz = -servoState->z;
-    float speed = 30;
-    move_sendMotion(MOVE_AXIS_Z, dz, speed);
+    move_sendMotion(MOVE_AXIS_Z, dz, 20);
     move_waitMotionSent();
     move_waitMotionFinished();
-    rotate_sendMotion(ROTATE_SERVO_BOTTOM, 1020, 1000);
-    move_sendMotion(MOVE_AXIS_X, dx, speed);
+    rotate_sendMotion(ROTATE_SERVO_BOTTOM, 1020, 500);
+    delay(1000);
+    move_sendMotion(MOVE_AXIS_X, dx, 40);
     move_waitMotionSent();
-    move_sendMotion(MOVE_AXIS_Y, dy, speed);
+    move_sendMotion(MOVE_AXIS_Y, dy, 40);
     move_waitMotionSent();
-    move_waitMotionFinished();
+    move_waitMotionFinished(25000);
     rotate_stopSuck();
+    delay(1000);
     rotate_initPos();
+}
+
+void ServoDriver::gotoLayer(int layer)
+{
+    float dz = -servoState->z;
+    move_sendMotion(MOVE_AXIS_Z, dz, 100);
+    move_waitMotionSent();
+    move_waitMotionFinished();
+    move_goto(layerHight[layer], servoState->y, 100);
+    move_waitMotionSent();
+    move_waitMotionFinished();
 }
 
 bool ServoDriver::rotate_connect(const QString& port)
@@ -255,4 +270,15 @@ bool ServoDriver::rotate_initPos(bool withSucker)
     if(withSucker)
         res &= rotate_sendMotion(ROTATE_SERVO_SUCKER, 1500);
     return res;
+}
+
+void ServoDriver::delay(int ms)
+{
+    QTime targetTime = QTime::currentTime().addMSecs(ms);
+    QTime currTime = QTime::currentTime();
+    while(currTime < targetTime)
+    {
+        QApplication::processEvents();
+        currTime = QTime::currentTime();
+    }
 }

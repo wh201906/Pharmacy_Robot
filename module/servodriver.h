@@ -55,12 +55,16 @@ public:
     bool rotate_initPos(bool withSucker = false);
 
     bool move_waitMotionSent(int msec = 1000);
+    void delay(int ms);
+    void getDrug(float distance);
+    void gotoLayer(int layer);
 signals:
     void move_setPortName(QString name);
     void move_connectPort(MoveController::OpenMode mode);
     void move_disconnectPort();
     void move_write(QByteArray data);
     void move_getControllerState();
+    void move_servoStateUpdated(bool isRunning, double x, double y, double z);
 private slots:
     void move_onControllerErrorOccurred();
     void move_onServoStateFetched(MoveController::Move_Servo_State st);
@@ -77,7 +81,7 @@ private:
     bool motionSentFlag = false;
 
     bool move_forceRange = true;
-    const QList<double> layerHight = {-2.016, -127.216, -273.379, -424.317, -550.007, -697};
+    const QList<double> layerHight = {-2.016, -127.216, -278.379, -424.317, -550.007, -697};
 };
 
 
