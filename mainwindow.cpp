@@ -73,7 +73,7 @@ void MainWindow::on_testButton_clicked()
     pFunc = PyObject_GetAttrString(pModule, "detect_ocr");
 
     pArgs = PyTuple_New(1);
-    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/roi.jpg"));
+    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/Pharmacy_Robot/roi.jpg"));
     /*
         PyObject *pReturn = NULL;
         pReturn = PyEval_CallObject(pFunc, pArgs);
@@ -96,7 +96,7 @@ void MainWindow::on_testButton_clicked()
     */
     Py_DecRef(pModule);
     Py_DecRef(pFunc);
-    Py_Finalize();
+    //Py_Finalize();
 
     QFile file("name.txt");
     file.open(QFile::Text | QFile::ReadOnly);

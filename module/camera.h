@@ -39,7 +39,7 @@ private:
     cv::Mat* roiOfRawFrame;
     QFile* roiFile;
     QFile* ocrResultFile;
-    QRect drug_positioning(cv::Mat* frame, cv::Mat* roiFrame = nullptr, cv::Mat* resultFrame = nullptr);
+    QRect drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter);
     QString callOCR();
     bool ocrState = false;
 };

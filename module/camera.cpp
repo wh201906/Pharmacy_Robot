@@ -12,7 +12,7 @@ Camera::Camera(QThread* thread, QObject *parent) : QObject(parent)
     ocrResultFile = new QFile("/home/hdu/Pharmacy_Robot/ocr.txt");
     refreshTimer = new QTimer();
     refreshTimer->moveToThread(thread);
-    refreshTimer->setInterval(50);
+    refreshTimer->setInterval(200);
     connect(refreshTimer, &QTimer::timeout, this, &Camera::onRefreshTimeout);
 }
 
@@ -50,19 +50,26 @@ void Camera::getFrameAddr()
 
 void Camera::getOCRResult()
 {
-    QRect res = drug_positioning(rawFrame, roiFrame, roiOfRawFrame);
-    if(res.width() == 0)
+    bool openFileResult = false;
+    bool saveImageResult = false;
+    bool isCenter = false;
+    QRect res = drug_positioning(rawFrame, roiFrame, roiOfRawFrame, &isCenter);
+    if(!isCenter)
         return;
-    if(!roiFile->open(QFile::WriteOnly | QFile::Unbuffered | QFile::Truncate))
+    openFileResult = roiFile->open(QFile::WriteOnly | QFile::Unbuffered | QFile::Truncate);
+    if(!openFileResult)
         return;
-    if(!QImage((const unsigned char*)rawFrame->data, rawFrame->cols, rawFrame->rows, rawFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile))
+    saveImageResult = QImage((const unsigned char*)rawFrame->data, rawFrame->cols, rawFrame->rows, rawFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile);
+    if(!saveImageResult)
         return;
     roiFile->close();
-//    emit OCRResult(callOCR());
+    qDebug() << res.width() << isCenter << openFileResult << saveImageResult;
+    emit OCRResult(callOCR());
 }
 
-QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame)
+QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter)
 {
+    *isCenter = false;
     QRect res;
     double scale = 1;//0.5
 
@@ -139,12 +146,19 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
         int width_drug = stats.at<int>(max_i, 2);
         int height_drug = stats.at<int>(max_i, 3);
 
+        int center_x_drug = x_drug + width_drug / 2;
+        int center_y_drug = y_drug + height_drug / 2;
+        int center_x_gFrame = gFrame.cols / 2;
+        int center_y_gFrame = gFrame.rows / 2;
+        char tolerance_x = 60, tolerance_y = 50;
+
         cv::Rect rect;
         rect.x = x_drug;
         rect.y = y_drug;
         rect.width = width_drug;
         rect.height = height_drug;
-        if(max_Perimeter > 100)
+        if(max_Perimeter > 100 && center_x_drug > center_x_gFrame - tolerance_x && center_x_drug < center_x_gFrame + tolerance_x && center_y_drug > center_y_gFrame - tolerance_y && center_y_drug < center_y_gFrame + tolerance_y)
+//            if(max_Perimeter > 100)
         {
             Point p1 = Point(x_drug, y_drug);
             Point p2 = Point(x_drug + width_drug, y_drug + height_drug);
@@ -152,6 +166,7 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
             if(roi.width && roi.height && roiFrame != nullptr)
                 *roiFrame = gFrame(roi);
             rectangle(gFrame, rect, CV_RGB(255, 0, 0), 2, 8, 0);
+            *isCenter = true;
         }
     }
     else //只有背景
@@ -199,8 +214,8 @@ QString Camera::callOCR()
     PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/Pharmacy_Robot/roi.jpg"));
     PyEval_CallObject(pFunc, pArgs);
 
-    Py_DecRef(pModule);
-    Py_DecRef(pFunc);
+//    Py_DecRef(pModule);
+//    Py_DecRef(pFunc);
     Py_Finalize();
 
     ocrResultFile->open(QFile::Text | QFile::ReadOnly);
