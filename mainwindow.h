@@ -1,18 +1,15 @@
 ﻿#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <Python.h>
+#include "module/camera.h"
 #include <QMainWindow>
 #include <QDebug>
 #include <QThread>
 #include <QMessageBox>
 #include <QDateTime>
-#include <opencv.hpp>
-#include <opencv2/imgproc/types_c.h>
 
 #include "module/rfid.h"
 #include "module/servodriver.h"
-#include "module/camera.h"
 #include "servotestdialog.h"
 #include "rfidtestdialog.h"
 #include "cameratestdialog.h"

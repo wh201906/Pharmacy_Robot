@@ -220,7 +220,7 @@ void ServoTestDialog::on_moveToButton_clicked()
 
 void ServoTestDialog::on_getDrugButton_clicked()
 {
-    driver->getDrug(50);
+    driver->getDrug(75);
 }
 
 void ServoTestDialog::on_goToLayerButton_clicked()

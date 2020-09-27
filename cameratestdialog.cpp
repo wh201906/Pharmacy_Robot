@@ -10,8 +10,10 @@ CameraTestDialog::CameraTestDialog(Camera* camera, QWidget *parent) :
     connect(this, &CameraTestDialog::openCam, camera, &Camera::openCam);
     connect(this, &CameraTestDialog::getFrameAddr, camera, &Camera::getFrameAddr);
     connect(this, &CameraTestDialog::closeCam, camera, &Camera::closeCam);
+    connect(this, &CameraTestDialog::setOCRState, camera, &Camera::setOCRState);
     connect(camera, &Camera::frameRefreshed, this, &CameraTestDialog::onFrameRefreshed);
     connect(camera, &Camera::frameAddr, this, &CameraTestDialog::onFrameAddrFetched);
+    connect(camera, &Camera::OCRResult, this, &CameraTestDialog::onOCRResultFetched);
 }
 
 CameraTestDialog::~CameraTestDialog()
@@ -19,17 +21,32 @@ CameraTestDialog::~CameraTestDialog()
     delete ui;
 }
 
+void CameraTestDialog::onOCRResultFetched(QString result)
+{
+    qDebug() << result;
+}
+
 void CameraTestDialog::onFrameRefreshed()
 {
     if(rawFrame != nullptr)
     {
-        ui->rawFrameLabel->setPixmap(QPixmap::fromImage(QImage((const unsigned char*)rawFrame->data, rawFrame->cols, rawFrame->rows, rawFrame->step, QImage::Format_RGB888).rgbSwapped()));
+        ui->rawFrameLabel->setPixmap(mat2Pixmap(rawFrame));
+    }
+    if(roiFrame != nullptr)
+    {
+        ui->roiFrameLabel->setPixmap(mat2Pixmap(roiFrame));
+    }
+    if(roiOfRawFrame != nullptr)
+    {
+        ui->roiOfRawFrameLabel->setPixmap(mat2Pixmap(roiOfRawFrame));
     }
 }
 
-void CameraTestDialog::onFrameAddrFetched(cv::Mat* addr)
+void CameraTestDialog::onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr)
 {
-    this->rawFrame = addr;
+    this->rawFrame = rawAddr;
+    this->roiFrame = roiAddr;
+    this->roiOfRawFrame = roiOfRawAddr;
 }
 
 void CameraTestDialog::on_connectButton_clicked()
@@ -41,4 +58,15 @@ void CameraTestDialog::on_connectButton_clicked()
 void CameraTestDialog::on_disconnectButton_clicked()
 {
     emit closeCam();
+}
+
+QPixmap CameraTestDialog::mat2Pixmap(cv::Mat* mat)
+{
+    return QPixmap::fromImage(QImage((const unsigned char*)mat->data, mat->cols, mat->rows, mat->step, QImage::Format_RGB888).rgbSwapped());
+}
+
+void CameraTestDialog::on_OCRCheckBox_stateChanged(int arg1)
+{
+    emit setOCRState(arg1 == Qt::Checked);
+    emit getFrameAddr();
 }

@@ -509,7 +509,7 @@
             <enum>Qt::ClickFocus</enum>
            </property>
            <property name="text">
-            <string>50</string>
+            <string>75</string>
            </property>
           </widget>
          </item>

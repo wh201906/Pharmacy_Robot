@@ -6,6 +6,10 @@ Camera::Camera(QThread* thread, QObject *parent) : QObject(parent)
     moveToThread(thread);
     cam = new cv::VideoCapture;
     rawFrame = new cv::Mat;
+    roiFrame = new cv::Mat;
+    roiOfRawFrame = new cv::Mat;
+    roiFile = new QFile("/home/hdu/Pharmacy_Robot/roi.jpg");
+    ocrResultFile = new QFile("/home/hdu/Pharmacy_Robot/ocr.txt");
     refreshTimer = new QTimer();
     refreshTimer->moveToThread(thread);
     refreshTimer->setInterval(50);
@@ -25,6 +29,8 @@ void Camera::openCam(int id)
 void Camera::onRefreshTimeout()
 {
     cam->read(*rawFrame);
+    if(ocrState)
+        getOCRResult();
     emit frameRefreshed();
 }
 
@@ -36,18 +42,41 @@ void Camera::closeCam()
 
 void Camera::getFrameAddr()
 {
-    emit frameAddr(rawFrame);
+    if(ocrState)
+        emit frameAddr(rawFrame, roiFrame, roiOfRawFrame);
+    else
+        emit frameAddr(rawFrame, nullptr, nullptr);
 }
 
-QRect Camera::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
+void Camera::getOCRResult()
+{
+    QRect res = drug_positioning(rawFrame, roiFrame, roiOfRawFrame);
+    if(res.width() == 0)
+        return;
+    if(!roiFile->open(QFile::WriteOnly | QFile::Unbuffered | QFile::Truncate))
+        return;
+    if(!QImage((const unsigned char*)rawFrame->data, rawFrame->cols, rawFrame->rows, rawFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile))
+        return;
+    roiFile->close();
+//    emit OCRResult(callOCR());
+}
+
+QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame)
 {
     QRect res;
     double scale = 1;//0.5
 
+    res.setX(0);
+    res.setY(0);
+    res.setWidth(0);
+    res.setHeight(0);
+
     using namespace cv;
-    cv::Size ResImgSiz = cv::Size(frame.cols * scale, frame.rows * scale);
-    cv::Mat gFrame = cv::Mat(ResImgSiz, frame.type());
-    cv::resize(frame, gFrame, ResImgSiz);
+    if(frame->cols == 0 || frame->rows == 0)
+        return res;
+    cv::Size ResImgSiz = cv::Size(frame->cols * scale, frame->rows * scale);
+    cv::Mat gFrame = cv::Mat(ResImgSiz, frame->type());
+    cv::resize(*frame, gFrame, ResImgSiz);
 
     cv::Mat rFrame;
     cvtColor(gFrame, rFrame, CV_BGR2GRAY);
@@ -79,9 +108,6 @@ QRect Camera::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
     //闭运算
     element = getStructuringElement(MORPH_RECT, Size(4, 5), Point(-1, -1));
     morphologyEx(open, close, 3, element, Point(-1, -1));
-    ////开运算
-    //element = getStructuringElement(MORPH_RECT, Size(5, 4), Point(-1, -1));
-    //morphologyEx(close, open_2, 2, element, Point(-1, -1));
     //连通域标记
     cv::Mat labels, stats, centroids;
     int num = cv::connectedComponentsWithStats(close, labels, stats, centroids);
@@ -108,51 +134,25 @@ QRect Camera::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
         res.setWidth(stats.at<int>(max_i, 2));
         res.setHeight(stats.at<int>(max_i, 3));
         //画框
-        int x_drug = output_rect[0] = stats.at<int>(max_i, 0);
-        int y_drug = output_rect[1] = stats.at<int>(max_i, 1);
-        int width_drug = output_rect[2] = stats.at<int>(max_i, 2);
-        int height_drug = output_rect[3] = stats.at<int>(max_i, 3);
-        //			int area_drug = stats.at<int>(max_i, 4);
-        int center_x_drug = x_drug + width_drug / 2;
-        int center_y_drug = y_drug + height_drug / 2;
-        int center_x_gFrame = gFrame.cols / 2;
-        int center_y_gFrame = gFrame.rows / 2;
-        char tolerance_x = 60, tolerance_y = 50;
-        //			char tolerance_min = 5;
+        int x_drug = stats.at<int>(max_i, 0);
+        int y_drug = stats.at<int>(max_i, 1);
+        int width_drug = stats.at<int>(max_i, 2);
+        int height_drug = stats.at<int>(max_i, 3);
+
         cv::Rect rect;
         rect.x = x_drug;
         rect.y = y_drug;
         rect.width = width_drug;
         rect.height = height_drug;
-        //周长与中心点判断
-        //printf(" %d   %d\n", gframe.cols, gframe.rows);
-        //printf(" center_x_gframe - tolerance=%d\n", center_x_gframe - tolerance);
-        printf(" max_perimeter=%d \n center_x_drug=%d (%d-%d) \n center_y_drug=%d (%d-%d)\n", max_Perimeter, center_x_drug, center_x_gFrame - tolerance_x, center_x_gFrame + tolerance_x, center_y_drug, center_y_gFrame - tolerance_y, center_y_gFrame + tolerance_y);
-//        if(max_Perimeter > 100 && center_x_drug > center_x_gFrame - tolerance_x && center_x_drug < center_x_gFrame + tolerance_x && center_y_drug > center_y_gFrame - tolerance_y && center_y_drug < center_y_gFrame + tolerance_y)
         if(max_Perimeter > 100)
         {
             Point p1 = Point(x_drug, y_drug);
             Point p2 = Point(x_drug + width_drug, y_drug + height_drug);
             Rect roi = Rect(p1, p2);
-            if(roi.width && roi.height)
-            {
-                cv::Mat roiImg = gFrame(roi);
-                imshow("roi", roiImg);
-                imwrite("/home/hdu/roi.jpg", roiImg);
-            }
-
+            if(roi.width && roi.height && roiFrame != nullptr)
+                *roiFrame = gFrame(roi);
             rectangle(gFrame, rect, CV_RGB(255, 0, 0), 2, 8, 0);
-            //printf("rectangle\n");
         }
-        //cv::imshow("edgeX_Y_Mat", edgeX_Y_Mat_out);
-        //cv::imshow("g_edgeX_Y_Mat", g_edgeX_Y_Mat_out);
-        //cv::imshow("close", close);
-        //		cv::imshow("edgeX_Mat", edgeX_Mat_out);
-        //		cv::imshow("edgeY_Mat", edgeY_Mat_out);
-        //cv::imshow("rFrame", rFrame);
-        cv::imshow("frame", gFrame);
-
-        //waitKey(1);
     }
     else //只有背景
     {
@@ -162,6 +162,54 @@ QRect Camera::drug_positioning(cv::Mat frame, cv::Mat* resultFrame)
         res.setHeight(0);
     }
     qDebug() << res;
-    gFrame.copyTo(*resultFrame);
+    if(resultFrame != nullptr)
+        gFrame.copyTo(*resultFrame);
     return res;
+}
+
+QString Camera::callOCR()
+{
+    Py_Initialize();
+    if(!Py_IsInitialized())
+    {
+        qDebug() << "cannot open python!";
+    }
+    PyRun_SimpleString("import sys");
+    PyRun_SimpleString("sys.path.append('/home/hdu/chineseocr_lite-onnx')");
+
+    PyObject *pModule, *pFunc, *pArgs, *pDict;
+    pModule = PyImport_ImportModule("detect_mine");
+    if(!pModule)
+    {
+        qDebug() << "cannot open python file!";
+    }
+    pDict = PyModule_GetDict(pModule);
+    if(!pDict)
+    {
+        qDebug() << "cannot find dictionary!";
+    }
+    pFunc = PyDict_GetItemString(pDict, "detect_ocr");
+    if(!pFunc || !PyCallable_Check(pFunc))
+    {
+        qDebug() << "cannot find function!";
+    }
+    pFunc = PyObject_GetAttrString(pModule, "detect_ocr");
+
+    pArgs = PyTuple_New(1);
+    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/Pharmacy_Robot/roi.jpg"));
+    PyEval_CallObject(pFunc, pArgs);
+
+    Py_DecRef(pModule);
+    Py_DecRef(pFunc);
+    Py_Finalize();
+
+    ocrResultFile->open(QFile::Text | QFile::ReadOnly);
+    QString result = ocrResultFile->readAll();
+    ocrResultFile->close();
+    return result;
+}
+
+void Camera::setOCRState(bool enabled)
+{
+    ocrState = enabled;
 }

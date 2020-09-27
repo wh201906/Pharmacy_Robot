@@ -45,9 +45,7 @@ void MainWindow::on_saveImageButton_clicked()
 
 void MainWindow::on_testButton_clicked()
 {
-//    cv::Mat res;
-//    drug_positioning(faceRecognizer->getRawFrame(), &res);
-//    ui->imgLabel->setPixmap(QPixmap::fromImage(faceRecognizer->frame2image(res)));
+
     Py_Initialize();
     if(!Py_IsInitialized())
     {

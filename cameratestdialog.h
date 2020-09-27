@@ -1,8 +1,8 @@
 #ifndef CAMERATESTDIALOG_H
 #define CAMERATESTDIALOG_H
 
-#include <QDialog>
 #include "module/camera.h"
+#include <QDialog>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
 
@@ -21,20 +21,27 @@ public:
 
 public slots:
     void onFrameRefreshed();
-    void onFrameAddrFetched(cv::Mat* addr);
+    void onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr);
+    void onOCRResultFetched(QString result);
 private slots:
     void on_connectButton_clicked();
 
     void on_disconnectButton_clicked();
 
+    void on_OCRCheckBox_stateChanged(int arg1);
+
 private:
     Ui::CameraTestDialog *ui;
     Camera* camera;
     cv::Mat* rawFrame = nullptr;
+    cv::Mat* roiFrame = nullptr;
+    cv::Mat* roiOfRawFrame = nullptr;
+    QPixmap mat2Pixmap(cv::Mat *mat);
 signals:
     void openCam(int id);
     void getFrameAddr();
     void closeCam();
+    void setOCRState(bool enabled);
 };
 
 #endif // CAMERATESTDIALOG_H
