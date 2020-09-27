@@ -5,6 +5,7 @@
 #include <QThread>
 #include <QDebug>
 #include <QTimer>
+#include <QRect>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
 
