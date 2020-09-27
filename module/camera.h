@@ -9,6 +9,7 @@
 #include <QRect>
 #include <QFile>
 #include <QImage>
+#include <QProcess>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
 

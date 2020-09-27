@@ -12,7 +12,7 @@ Camera::Camera(QThread* thread, QObject *parent) : QObject(parent)
     ocrResultFile = new QFile("/home/hdu/Pharmacy_Robot/ocr.txt");
     refreshTimer = new QTimer();
     refreshTimer->moveToThread(thread);
-    refreshTimer->setInterval(200);
+    refreshTimer->setInterval(50);
     connect(refreshTimer, &QTimer::timeout, this, &Camera::onRefreshTimeout);
 }
 
@@ -59,12 +59,12 @@ void Camera::getOCRResult()
     openFileResult = roiFile->open(QFile::WriteOnly | QFile::Unbuffered | QFile::Truncate);
     if(!openFileResult)
         return;
-    saveImageResult = QImage((const unsigned char*)rawFrame->data, rawFrame->cols, rawFrame->rows, rawFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile);
+    saveImageResult = QImage((const unsigned char*)roiFrame->data, roiFrame->cols, roiFrame->rows, roiFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile);
     if(!saveImageResult)
         return;
     roiFile->close();
     qDebug() << res.width() << isCenter << openFileResult << saveImageResult;
-    emit OCRResult(callOCR());
+//    emit OCRResult(callOCR());
 }
 
 QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter)
@@ -184,39 +184,11 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
 
 QString Camera::callOCR()
 {
-    Py_Initialize();
-    if(!Py_IsInitialized())
-    {
-        qDebug() << "cannot open python!";
-    }
-    PyRun_SimpleString("import sys");
-    PyRun_SimpleString("sys.path.append('/home/hdu/chineseocr_lite-onnx')");
-
-    PyObject *pModule, *pFunc, *pArgs, *pDict;
-    pModule = PyImport_ImportModule("detect_mine");
-    if(!pModule)
-    {
-        qDebug() << "cannot open python file!";
-    }
-    pDict = PyModule_GetDict(pModule);
-    if(!pDict)
-    {
-        qDebug() << "cannot find dictionary!";
-    }
-    pFunc = PyDict_GetItemString(pDict, "detect_ocr");
-    if(!pFunc || !PyCallable_Check(pFunc))
-    {
-        qDebug() << "cannot find function!";
-    }
-    pFunc = PyObject_GetAttrString(pModule, "detect_ocr");
-
-    pArgs = PyTuple_New(1);
-    PyTuple_SetItem(pArgs, 0, Py_BuildValue("s", "/home/hdu/Pharmacy_Robot/roi.jpg"));
-    PyEval_CallObject(pFunc, pArgs);
-
-//    Py_DecRef(pModule);
-//    Py_DecRef(pFunc);
-    Py_Finalize();
+    qDebug() << "OCR Started";
+    QProcess pyProcess;
+    pyProcess.start("python", {"/home/hdu/chineseocr_lite-onnx/detect_mine.py"});
+    pyProcess.waitForFinished(10000);
+    qDebug() << "OCR Stoped";
 
     ocrResultFile->open(QFile::Text | QFile::ReadOnly);
     QString result = ocrResultFile->readAll();
