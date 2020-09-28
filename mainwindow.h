@@ -31,6 +31,7 @@ public:
 
 //    int *drug_positioning(cv::Mat frame);
     int *drug_positioning(cv::Mat frame, cv::Mat *resultFrame);
+    QList<QByteArray> file2list(QString path);
 private slots:
 
     void on_servoTestButton_clicked();
@@ -40,6 +41,8 @@ private slots:
     void on_RFIDTestButton_clicked();
 
     void on_cameraTestButton_clicked();
+
+    void on_testButton_clicked();
 
 private:
     Ui::MainWindow *ui;

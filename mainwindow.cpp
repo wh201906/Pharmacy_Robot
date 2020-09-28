@@ -44,3 +44,39 @@ void MainWindow::on_cameraTestButton_clicked()
 {
     cameraTestDialog->show();
 }
+
+void MainWindow::on_testButton_clicked()
+{
+    ui->drugListWidget->clear();
+    QString userID = reader->get14aUID().toUpper();
+    if(userID == "")
+    {
+        ui->idLabel->setText("No Card");
+        return;
+    }
+    ui->idLabel->setText("ID:" + userID);
+    QList<QByteArray> patientInfo = file2list("/home/hdu/Pharmacy_Robot/" + userID + ".txt");
+    if(patientInfo.size() == 0)
+    {
+        ui->nameLabel->setText("Name:Not Found");
+        return;
+    }
+    ui->nameLabel->setText("Name:" + patientInfo[0]);
+    for(int i = 1; i < patientInfo.size(); i++)
+    {
+        if(patientInfo[i].size() == 0)
+            continue;
+        QList<QByteArray> drugInfo = patientInfo[i].split(',');
+        ui->drugListWidget->addItem(drugInfo[0]);
+    }
+}
+
+QList<QByteArray> MainWindow::file2list(QString path)
+{
+    QList<QByteArray> result;
+    QFile file(path);
+    if(!file.open(QFile::Text | QFile::ReadOnly))
+        return result;
+    result = file.readAll().split('\n');
+    return result;
+}

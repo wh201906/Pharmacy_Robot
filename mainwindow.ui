@@ -6,69 +6,103 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>241</width>
-    <height>415</height>
+    <width>279</width>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QGroupBox" name="testGroupBox">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>250</y>
-      <width>111</width>
-      <height>141</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>Test</string>
-    </property>
-    <property name="checkable">
-     <bool>true</bool>
-    </property>
-    <widget class="QPushButton" name="servoTestButton">
-     <property name="geometry">
-      <rect>
-       <x>12</x>
-       <y>32</y>
-       <width>80</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>ServoTest</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="RFIDTestButton">
-     <property name="geometry">
-      <rect>
-       <x>12</x>
-       <y>63</y>
-       <width>80</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>RFIDTest</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="cameraTestButton">
-     <property name="geometry">
-      <rect>
-       <x>12</x>
-       <y>94</y>
-       <width>89</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>CameraTest</string>
-     </property>
-    </widget>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="testButton">
+      <property name="text">
+       <string>Test</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="idLabel">
+      <property name="text">
+       <string>ID:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="nameLabel">
+      <property name="text">
+       <string>Name:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>Items:</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QListWidget" name="drugListWidget"/>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="testGroupBox">
+      <property name="title">
+       <string>Test</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <widget class="QPushButton" name="servoTestButton">
+       <property name="geometry">
+        <rect>
+         <x>12</x>
+         <y>32</y>
+         <width>80</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>ServoTest</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="RFIDTestButton">
+       <property name="geometry">
+        <rect>
+         <x>12</x>
+         <y>63</y>
+         <width>80</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>RFIDTest</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="cameraTestButton">
+       <property name="geometry">
+        <rect>
+         <x>12</x>
+         <y>94</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>CameraTest</string>
+       </property>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
