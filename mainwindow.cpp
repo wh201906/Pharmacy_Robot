@@ -28,6 +28,9 @@ MainWindow::~MainWindow()
 void MainWindow::on_testGroupBox_clicked(bool checked)
 {
     ui->servoTestButton->setVisible(checked);
+    ui->RFIDTestButton->setVisible(checked);
+    ui->cameraTestButton->setVisible(checked);
+//    ui->testGroupBox->adjustSize();
 }
 
 void MainWindow::on_servoTestButton_clicked()
