@@ -64,7 +64,7 @@ void Camera::getOCRResult()
         return;
     roiFile->close();
     qDebug() << res.width() << isCenter << openFileResult << saveImageResult;
-//    emit OCRResult(callOCR());
+    //emit OCRResult(callOCR());
 }
 
 QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter)
@@ -150,15 +150,15 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
         int center_y_drug = y_drug + height_drug / 2;
         int center_x_gFrame = gFrame.cols / 2;
         int center_y_gFrame = gFrame.rows / 2;
-        char tolerance_x = 60, tolerance_y = 50;
+        char tolerance_x = 20, tolerance_y = 50;
 
         cv::Rect rect;
         rect.x = x_drug;
         rect.y = y_drug;
         rect.width = width_drug;
         rect.height = height_drug;
-        if(max_Perimeter > 100 && center_x_drug > center_x_gFrame - tolerance_x && center_x_drug < center_x_gFrame + tolerance_x && center_y_drug > center_y_gFrame - tolerance_y && center_y_drug < center_y_gFrame + tolerance_y)
-//            if(max_Perimeter > 100)
+        if(max_Perimeter > 500 && center_x_drug > center_x_gFrame - tolerance_x && center_x_drug < center_x_gFrame + tolerance_x && center_y_drug > center_y_gFrame - tolerance_y && center_y_drug < center_y_gFrame + tolerance_y)
+//        if(max_Perimeter > 100)
         {
             Point p1 = Point(x_drug, y_drug);
             Point p2 = Point(x_drug + width_drug, y_drug + height_drug);
@@ -167,6 +167,11 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
                 *roiFrame = gFrame(roi);
             rectangle(gFrame, rect, CV_RGB(255, 0, 0), 2, 8, 0);
             *isCenter = true;
+            printf("rect");
+        }
+        else
+        {
+            printf("no rect!");
         }
     }
     else //只有背景
