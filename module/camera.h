@@ -29,6 +29,7 @@ signals:
     void OCRResult(QString result);
     void frameRefreshed();
     void frameAddr(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr);
+    void drugRect(QRect rect);
 private slots:
     void onRefreshTimeout();
 private:

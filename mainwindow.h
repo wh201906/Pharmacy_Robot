@@ -10,9 +10,9 @@
 
 #include "module/rfid.h"
 #include "module/servodriver.h"
-#include "servotestdialog.h"
-#include "rfidtestdialog.h"
-#include "cameratestdialog.h"
+#include "testDialog/servotestdialog.h"
+#include "testDialog/rfidtestdialog.h"
+#include "testDialog/cameratestdialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui
@@ -32,15 +32,6 @@ public:
 //    int *drug_positioning(cv::Mat frame);
     int *drug_positioning(cv::Mat frame, cv::Mat *resultFrame);
 private slots:
-    void on_camOpenButton_clicked();
-
-    void on_getFrameButton_clicked();
-
-    void on_camCloseButton_clicked();
-
-    void on_saveImageButton_clicked();
-
-    void on_testButton_clicked();
 
     void on_servoTestButton_clicked();
 

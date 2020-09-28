@@ -14,11 +14,17 @@ CameraTestDialog::CameraTestDialog(Camera* camera, QWidget *parent) :
     connect(camera, &Camera::frameRefreshed, this, &CameraTestDialog::onFrameRefreshed);
     connect(camera, &Camera::frameAddr, this, &CameraTestDialog::onFrameAddrFetched);
     connect(camera, &Camera::OCRResult, this, &CameraTestDialog::onOCRResultFetched);
+    connect(camera, &Camera::drugRect, this, &CameraTestDialog::onDrugRectFetched);
 }
 
 CameraTestDialog::~CameraTestDialog()
 {
     delete ui;
+}
+
+void CameraTestDialog::onDrugRectFetched(QRect rect)
+{
+    qDebug() << rect;
 }
 
 void CameraTestDialog::onOCRResultFetched(QString result)

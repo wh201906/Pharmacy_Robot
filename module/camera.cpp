@@ -28,7 +28,16 @@ void Camera::openCam(int id)
 
 void Camera::onRefreshTimeout()
 {
-    cam->read(*rawFrame);
+    bool readResult = cam->read(*rawFrame);
+    if(!readResult)
+    {
+        cam->release();
+        for(int i = 0; i < 10; i++)
+        {
+            if(cam->open(i))
+                break;
+        }
+    }
     if(ocrState)
         getOCRResult();
     emit frameRefreshed();
@@ -54,16 +63,19 @@ void Camera::getOCRResult()
     bool saveImageResult = false;
     bool isCenter = false;
     QRect res = drug_positioning(rawFrame, roiFrame, roiOfRawFrame, &isCenter);
-    if(!isCenter)
-        return;
+    emit drugRect(res);
+//    if(!isCenter)
+//        return;
     openFileResult = roiFile->open(QFile::WriteOnly | QFile::Unbuffered | QFile::Truncate);
     if(!openFileResult)
+    {
+        roiFile->close();
         return;
+    }
     saveImageResult = QImage((const unsigned char*)roiFrame->data, roiFrame->cols, roiFrame->rows, roiFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile);
     if(!saveImageResult)
         return;
     roiFile->close();
-    qDebug() << res.width() << isCenter << openFileResult << saveImageResult;
     //emit OCRResult(callOCR());
 }
 
@@ -146,19 +158,13 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
         int width_drug = stats.at<int>(max_i, 2);
         int height_drug = stats.at<int>(max_i, 3);
 
-        int center_x_drug = x_drug + width_drug / 2;
-        int center_y_drug = y_drug + height_drug / 2;
-        int center_x_gFrame = gFrame.cols / 2;
-        int center_y_gFrame = gFrame.rows / 2;
-        char tolerance_x = 20, tolerance_y = 50;
-
         cv::Rect rect;
         rect.x = x_drug;
         rect.y = y_drug;
         rect.width = width_drug;
         rect.height = height_drug;
-        if(max_Perimeter > 500 && center_x_drug > center_x_gFrame - tolerance_x && center_x_drug < center_x_gFrame + tolerance_x && center_y_drug > center_y_gFrame - tolerance_y && center_y_drug < center_y_gFrame + tolerance_y)
-//        if(max_Perimeter > 100)
+//        if(max_Perimeter > 500 && center_x_drug > center_x_gFrame - tolerance_x && center_x_drug < center_x_gFrame + tolerance_x && center_y_drug > center_y_gFrame - tolerance_y && center_y_drug < center_y_gFrame + tolerance_y)
+        if(max_Perimeter > 100)
         {
             Point p1 = Point(x_drug, y_drug);
             Point p2 = Point(x_drug + width_drug, y_drug + height_drug);
@@ -181,7 +187,7 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
         res.setWidth(0);
         res.setHeight(0);
     }
-    qDebug() << res;
+//    qDebug() << res;
     if(resultFrame != nullptr)
         gFrame.copyTo(*resultFrame);
     return res;

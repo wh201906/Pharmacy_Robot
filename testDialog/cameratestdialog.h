@@ -23,6 +23,7 @@ public slots:
     void onFrameRefreshed();
     void onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr);
     void onOCRResultFetched(QString result);
+    void onDrugRectFetched(QRect rect);
 private slots:
     void on_connectButton_clicked();
 

@@ -16,31 +16,31 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    cameratestdialog.cpp \
+    testDialog/cameratestdialog.cpp \
     main.cpp \
     mainwindow.cpp \
     module/camera.cpp \
     module/movecontroller.cpp \
     module/rfid.cpp \
     module/servodriver.cpp \
-    rfidtestdialog.cpp \
-    servotestdialog.cpp
+    testDialog/rfidtestdialog.cpp \
+    testDialog/servotestdialog.cpp
 
 HEADERS += \
-    cameratestdialog.h \
+    testDialog/cameratestdialog.h \
     mainwindow.h \
     module/camera.h \
     module/movecontroller.h \
     module/rfid.h \
     module/servodriver.h \
-    rfidtestdialog.h \
-    servotestdialog.h
+    testDialog/rfidtestdialog.h \
+    testDialog/servotestdialog.h
 
 FORMS += \
-    cameratestdialog.ui \
+    testDialog/cameratestdialog.ui \
     mainwindow.ui \
-    rfidtestdialog.ui \
-    servotestdialog.ui
+    testDialog/rfidtestdialog.ui \
+    testDialog/servotestdialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
