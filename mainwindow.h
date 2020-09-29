@@ -39,6 +39,7 @@ public slots:
     void onDrugRectFetched(QRect rect);
     void onFrameRefreshed();
     void onFrameAddrFetched(cv::Mat *rawAddr, cv::Mat *roiAddr, cv::Mat *roiOfRawAddr);
+    void onOCRResultFetched(QString result);
 private slots:
 
     void on_servoTestButton_clicked();
@@ -69,5 +70,6 @@ private:
     QPixmap mat2Pixmap(cv::Mat *mat);
 signals:
     void getFrameAddr();
+    void getOCRResult();
 };
 #endif // MAINWINDOW_H

@@ -23,6 +23,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::getFrameAddr, camera, &Camera::getFrameAddr);
     connect(camera, &Camera::frameRefreshed, this, &MainWindow::onFrameRefreshed);
     connect(camera, &Camera::frameAddr, this, &MainWindow::onFrameAddrFetched);
+    connect(camera, &Camera::OCRResult, this, &MainWindow::onOCRResultFetched);
+    connect(this, &MainWindow::getOCRResult, camera, &Camera::getOCRResult);
 }
 
 
@@ -30,6 +32,11 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::onOCRResultFetched(QString result)
+{
+    ui->ocrResultLabel->setText(result);
 }
 
 void MainWindow::onFrameRefreshed()
@@ -115,6 +122,8 @@ void MainWindow::on_testButton_clicked()
         servoDriver->move_waitMotionSent();
         servoDriver->move_waitMotionFinished();
         delay(500);
+//        emit getOCRResult();
+//        delay(500);
         QPointF catchPoint = linearTransform(vPoint, visualRect);
         servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
         delay(500);

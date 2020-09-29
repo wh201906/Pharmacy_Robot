@@ -76,7 +76,7 @@ void Camera::getOCRResult()
 //    if(!saveImageResult)
 //        return;
 //    roiFile->close();
-    //emit OCRResult(callOCR());
+//    emit OCRResult(callOCR());
 }
 
 QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter)
