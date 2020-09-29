@@ -24,12 +24,12 @@ CameraTestDialog::~CameraTestDialog()
 
 void CameraTestDialog::onDrugRectFetched(QRect rect)
 {
-    qDebug() << rect;
+//    qDebug() << rect;
 }
 
 void CameraTestDialog::onOCRResultFetched(QString result)
 {
-    qDebug() << result;
+//    qDebug() << result;
 }
 
 void CameraTestDialog::onFrameRefreshed()

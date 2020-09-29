@@ -63,6 +63,7 @@ void MainWindow::on_testButton_clicked()
     if(userID == "")
     {
         ui->idLabel->setText("No Card");
+        ui->nameLabel->setText("Name:");
         return;
     }
     ui->idLabel->setText("ID:" + userID);
@@ -87,6 +88,8 @@ void MainWindow::on_testButton_clicked()
     {
         QPointF vPoint = totalDrugInfo[ID];
         servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
+        servoDriver->move_waitMotionSent();
+        servoDriver->move_waitMotionFinished();
         delay(500);
         QPointF catchPoint = linearTransform(vPoint, visualRect);
         servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
@@ -126,6 +129,7 @@ QPointF MainWindow::linearTransform(QPointF vPoint, QRect vRect)
     QPointF result;
     result.setX(coe1[0] + vPoint.x()*coe1[1] + vPoint.y()*coe1[2] + vRect.x()*coe1[3] + vRect.y()*coe1[4] + vRect.width()*coe1[5] + vRect.height()*coe1[6]);
     result.setY(coe2[0] + vPoint.x()*coe2[1] + vPoint.y()*coe2[2] + vRect.x()*coe2[3] + vRect.y()*coe2[4] + vRect.width()*coe2[5] + vRect.height()*coe2[6]);
+    qDebug() << vPoint << vRect << result;
     return result;
 }
 

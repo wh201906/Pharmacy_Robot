@@ -173,11 +173,11 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
                 *roiFrame = gFrame(roi);
             rectangle(gFrame, rect, CV_RGB(255, 0, 0), 2, 8, 0);
             *isCenter = true;
-            printf("rect");
+//            printf("rect");
         }
         else
         {
-            printf("no rect!");
+//            printf("no rect!");
         }
     }
     else //只有背景

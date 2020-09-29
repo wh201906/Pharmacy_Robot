@@ -56,35 +56,35 @@ void MoveController::onReadyRead()
     bool requireClear = true;
     buffer->append(readAll());
 //    if(buffer->at(0) != 0x3E)
-    qDebug() << "raw:" << buffer->toHex();
+//    qDebug() << "raw:" << buffer->toHex();
     if(buffer->contains(0x65))
     {
-        qDebug() << "contain 0x65";
+//        qDebug() << "contain 0x65";
         if(!buffer->contains(QByteArray::fromHex("65 72 72 6F 72")) && readerState < 2)
         {
-            qDebug() << "error not found";
+//            qDebug() << "error not found";
             readerState++;
             requireClear = false;
         }
         else if(buffer->contains(QByteArray::fromHex("65 72 72 6F 72")))
         {
-            qDebug() << "error found";
+//            qDebug() << "error found";
             emit controllerError();
             requireClear = true;
         }
     }
     else if(buffer->contains(0x06))
     {
-        qDebug() << "contain 0x06";
+//        qDebug() << "contain 0x06";
         if(!buffer->contains(QByteArray::fromHex("06 00 04 01 00 F5")) && readerState < 2)
         {
-            qDebug() << "successful not found";
+//            qDebug() << "successful not found";
             readerState++;
             requireClear = false;
         }
         else if(buffer->contains(QByteArray::fromHex("06 00 04 01 00 F5")))
         {
-            qDebug() << "successful found";
+//            qDebug() << "successful found";
             writeSuccessful = true;
             emit MotionSent();
             requireClear = true;
@@ -92,15 +92,15 @@ void MoveController::onReadyRead()
     }
     if(buffer->at(0) == 0x3E)
     {
-        qDebug() << "contain 0x3E";
+//        qDebug() << "contain 0x3E";
         if(buffer->size() < 62)
         {
-            qDebug() << "less than 62";
+//            qDebug() << "less than 62";
             return;
         }
         else if(buffer->size() == 62)
         {
-            qDebug() << "equals to 62";
+//            qDebug() << "equals to 62";
             const qint32* rawX = (const qint32*)((const void*)(buffer->data() + 13));
             const qint32* rawY = (const qint32*)((const void*)(buffer->data() + 17));
             const qint32* rawZ = (const qint32*)((const void*)(buffer->data() + 21));
