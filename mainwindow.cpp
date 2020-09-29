@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     myRFIDTestDialog->setModal(false);
     cameraTestDialog = new CameraTestDialog(camera);
     cameraTestDialog->setModal(false);
+    connect(camera, &Camera::drugRect, this, &MainWindow::onDrugRectFetched);
 }
 
 MainWindow::~MainWindow()
@@ -25,12 +26,16 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::onDrugRectFetched(QRect rect)
+{
+    visualRect = rect;
+}
+
 void MainWindow::on_testGroupBox_clicked(bool checked)
 {
     ui->servoTestButton->setVisible(checked);
     ui->RFIDTestButton->setVisible(checked);
     ui->cameraTestButton->setVisible(checked);
-//    ui->testGroupBox->adjustSize();
 }
 
 void MainWindow::on_servoTestButton_clicked()
@@ -50,7 +55,9 @@ void MainWindow::on_cameraTestButton_clicked()
 
 void MainWindow::on_testButton_clicked()
 {
-    drugInfo = file2list("/home/hdu/Pharmacy_Robot/drugInfo.txt");
+
+    totalDrugInfo = file2drugInfo("/home/hdu/Pharmacy_Robot/drugInfo.txt");
+    QStringList requiredDrugID;
     ui->drugListWidget->clear();
     QString userID = reader->get14aUID().toUpper();
     if(userID == "")
@@ -70,8 +77,20 @@ void MainWindow::on_testButton_clicked()
     {
         if(patientInfo[i].size() == 0)
             continue;
-        QList<QByteArray> drugInfo = patientInfo[i].split(',');
-        ui->drugListWidget->addItem(drugInfo[1]);
+        QList<QByteArray> requiredDrugInfo = patientInfo[i].split(',');
+        if(requiredDrugInfo[0].startsWith('#'))
+            continue;
+        ui->drugListWidget->addItem(requiredDrugInfo[1]);
+        requiredDrugID.append(requiredDrugInfo[0]);
+    }
+    for(QString ID : requiredDrugID)
+    {
+        QPointF vPoint = totalDrugInfo[ID];
+        servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
+        delay(500);
+        QPointF catchPoint = linearTransform(vPoint, visualRect);
+        servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
+        delay(500);
     }
 }
 
@@ -83,4 +102,40 @@ QList<QByteArray> MainWindow::file2list(QString path)
         return result;
     result = file.readAll().split('\n');
     return result;
+}
+
+QMap<QString, QPointF> MainWindow::file2drugInfo(QString path)
+{
+    QStringList currItem;
+    QMap<QString, QPointF> result;
+    QList<QByteArray> lineList = file2list(path);
+    if(lineList.size() == 0)
+        return result;
+    for(QString line : lineList)
+    {
+        currItem = line.split(',');
+        result.insert(currItem[0], QPointF(currItem[2].toDouble(), currItem[3].toDouble()));
+    }
+    return result;
+}
+
+QPointF MainWindow::linearTransform(QPointF vPoint, QRect vRect)
+{
+    const double coe1[7] = {-0.693556148, 1.0010192, -0.000878111, 0.006579999, 0.061800669, 0.009361325, -0.114309532};
+    const double coe2[7] = {57.33135, 0.000437, 1.000207, -0.36999, 0.006473, -0.21877, 0.027652};
+    QPointF result;
+    result.setX(coe1[0] + vPoint.x()*coe1[1] + vPoint.y()*coe1[2] + vRect.x()*coe1[3] + vRect.y()*coe1[4] + vRect.width()*coe1[5] + vRect.height()*coe1[6]);
+    result.setY(coe2[0] + vPoint.x()*coe2[1] + vPoint.y()*coe2[2] + vRect.x()*coe2[3] + vRect.y()*coe2[4] + vRect.width()*coe2[5] + vRect.height()*coe2[6]);
+    return result;
+}
+
+void MainWindow::delay(int ms)
+{
+    QTime targetTime = QTime::currentTime().addMSecs(ms);
+    QTime currTime = QTime::currentTime();
+    while(currTime < targetTime)
+    {
+        QApplication::processEvents();
+        currTime = QTime::currentTime();
+    }
 }

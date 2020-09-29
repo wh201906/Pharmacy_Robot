@@ -30,6 +30,11 @@ public:
     ~MainWindow();
 
     QList<QByteArray> file2list(QString path);
+    QMap<QString, QPointF> file2drugInfo(QString path);
+    QPointF linearTransform(QPointF vPoint, QRect vRect);
+    void delay(int ms);
+public slots:
+    void onDrugRectFetched(QRect rect);
 private slots:
 
     void on_servoTestButton_clicked();
@@ -52,6 +57,7 @@ private:
     ServoTestDialog* servoTestDialog;
     RFIDTestDialog* myRFIDTestDialog;
     CameraTestDialog* cameraTestDialog;
-    QList<QByteArray> drugInfo;
+    QMap<QString, QPointF> totalDrugInfo;
+    QRect visualRect;
 };
 #endif // MAINWINDOW_H

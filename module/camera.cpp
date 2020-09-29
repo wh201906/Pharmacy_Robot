@@ -66,16 +66,16 @@ void Camera::getOCRResult()
     emit drugRect(res);
 //    if(!isCenter)
 //        return;
-    openFileResult = roiFile->open(QFile::WriteOnly | QFile::Unbuffered | QFile::Truncate);
-    if(!openFileResult)
-    {
-        roiFile->close();
-        return;
-    }
-    saveImageResult = QImage((const unsigned char*)roiFrame->data, roiFrame->cols, roiFrame->rows, roiFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile);
-    if(!saveImageResult)
-        return;
-    roiFile->close();
+//    openFileResult = roiFile->open(QFile::WriteOnly | QFile::Unbuffered | QFile::Truncate);
+//    if(!openFileResult)
+//    {
+//        roiFile->close();
+//        return;
+//    }
+//    saveImageResult = QImage((const unsigned char*)roiFrame->data, roiFrame->cols, roiFrame->rows, roiFrame->step, QImage::Format_RGB888).rgbSwapped().save(roiFile);
+//    if(!saveImageResult)
+//        return;
+//    roiFile->close();
     //emit OCRResult(callOCR());
 }
 
