@@ -18,12 +18,36 @@ MainWindow::MainWindow(QWidget *parent)
     myRFIDTestDialog->setModal(false);
     cameraTestDialog = new CameraTestDialog(camera);
     cameraTestDialog->setModal(false);
+    cameraFrame = new cv::Mat;
     connect(camera, &Camera::drugRect, this, &MainWindow::onDrugRectFetched);
+    connect(this, &MainWindow::getFrameAddr, camera, &Camera::getFrameAddr);
+    connect(camera, &Camera::frameRefreshed, this, &MainWindow::onFrameRefreshed);
+    connect(camera, &Camera::frameAddr, this, &MainWindow::onFrameAddrFetched);
 }
+
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::onFrameRefreshed()
+{
+    if(cameraFrame != nullptr)
+    {
+        ui->cameraLabel->setPixmap(mat2Pixmap(cameraFrame));
+    }
+}
+
+QPixmap MainWindow::mat2Pixmap(cv::Mat* mat)
+{
+    return QPixmap::fromImage(QImage((const unsigned char*)mat->data, mat->cols, mat->rows, mat->step, QImage::Format_RGB888).rgbSwapped());
+}
+
+void MainWindow::onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv::Mat* roiOfRawAddr)
+{
+    this->cameraFrame = rawAddr;
 }
 
 void MainWindow::onDrugRectFetched(QRect rect)
@@ -142,4 +166,9 @@ void MainWindow::delay(int ms)
         QApplication::processEvents();
         currTime = QTime::currentTime();
     }
+}
+
+void MainWindow::on_cameraGroupBox_clicked(bool checked)
+{
+    ui->cameraLabel->setVisible(checked);
 }

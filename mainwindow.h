@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QDateTime>
 
+#include <opencv.hpp>
+#include <opencv2/imgproc/types_c.h>
 #include "module/rfid.h"
 #include "module/servodriver.h"
 #include "testDialog/servotestdialog.h"
@@ -35,6 +37,8 @@ public:
     void delay(int ms);
 public slots:
     void onDrugRectFetched(QRect rect);
+    void onFrameRefreshed();
+    void onFrameAddrFetched(cv::Mat *rawAddr, cv::Mat *roiAddr, cv::Mat *roiOfRawAddr);
 private slots:
 
     void on_servoTestButton_clicked();
@@ -46,6 +50,8 @@ private slots:
     void on_cameraTestButton_clicked();
 
     void on_testButton_clicked();
+
+    void on_cameraGroupBox_clicked(bool checked);
 
 private:
     Ui::MainWindow *ui;
@@ -59,5 +65,9 @@ private:
     CameraTestDialog* cameraTestDialog;
     QMap<QString, QPointF> totalDrugInfo;
     QRect visualRect;
+    cv::Mat* cameraFrame;
+    QPixmap mat2Pixmap(cv::Mat *mat);
+signals:
+    void getFrameAddr();
 };
 #endif // MAINWINDOW_H
