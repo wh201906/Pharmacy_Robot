@@ -29,8 +29,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-//    int *drug_positioning(cv::Mat frame);
-    int *drug_positioning(cv::Mat frame, cv::Mat *resultFrame);
     QList<QByteArray> file2list(QString path);
 private slots:
 
@@ -54,5 +52,6 @@ private:
     ServoTestDialog* servoTestDialog;
     RFIDTestDialog* myRFIDTestDialog;
     CameraTestDialog* cameraTestDialog;
+    QList<QByteArray> drugInfo;
 };
 #endif // MAINWINDOW_H

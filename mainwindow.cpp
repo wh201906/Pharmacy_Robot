@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 
@@ -50,6 +50,7 @@ void MainWindow::on_cameraTestButton_clicked()
 
 void MainWindow::on_testButton_clicked()
 {
+    drugInfo = file2list("/home/hdu/Pharmacy_Robot/drugInfo.txt");
     ui->drugListWidget->clear();
     QString userID = reader->get14aUID().toUpper();
     if(userID == "")
@@ -70,7 +71,7 @@ void MainWindow::on_testButton_clicked()
         if(patientInfo[i].size() == 0)
             continue;
         QList<QByteArray> drugInfo = patientInfo[i].split(',');
-        ui->drugListWidget->addItem(drugInfo[0]);
+        ui->drugListWidget->addItem(drugInfo[1]);
     }
 }
 
