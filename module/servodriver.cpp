@@ -184,7 +184,7 @@ void ServoDriver::getDrug(float distance)
     move_sendMotion(MOVE_AXIS_Z, dz, 100);
     move_waitMotionSent();
     move_waitMotionFinished();
-    move_sendMotion(MOVE_AXIS_Z, -distance, 10);
+    move_sendMotion(MOVE_AXIS_Z, -distance, 20);
     move_waitMotionSent();
     rotate_suck();
     move_waitMotionFinished();
@@ -195,14 +195,14 @@ void ServoDriver::throwDrug()
     float dx = -servoState->x;
     float dy = 678 - servoState->y;
     float dz = -servoState->z;
-    move_sendMotion(MOVE_AXIS_Z, dz, 15);
+    move_sendMotion(MOVE_AXIS_Z, dz, 20);
     move_waitMotionSent();
     move_waitMotionFinished();
     rotate_sendMotion(ROTATE_SERVO_BOTTOM, 1020, 500);
     delay(1000);
-    move_sendMotion(MOVE_AXIS_X, dx, 40);
+    move_sendMotion(MOVE_AXIS_X, dx, 80);
     move_waitMotionSent();
-    move_sendMotion(MOVE_AXIS_Y, dy, 40);
+    move_sendMotion(MOVE_AXIS_Y, dy, 80);
     move_waitMotionSent();
     move_waitMotionFinished(25000);
     rotate_stopSuck();

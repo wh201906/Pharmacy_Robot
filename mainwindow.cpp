@@ -84,49 +84,57 @@ void MainWindow::on_cameraTestButton_clicked()
     cameraTestDialog->show();
 }
 
-void MainWindow::on_testButton_clicked()
+void MainWindow::on_startButton_clicked()
 {
-
-    totalDrugInfo = file2drugInfo("/home/hdu/Pharmacy_Robot/drugInfo.txt");
-    QStringList requiredDrugID;
-    ui->drugListWidget->clear();
-    QString userID = reader->get14aUID().toUpper();
-    if(userID == "")
+    isProcessing = true;
+    while(isProcessing)
     {
-        ui->idLabel->setText("No Card");
-        ui->nameLabel->setText("Name:");
-        return;
-    }
-    ui->idLabel->setText("ID:" + userID);
-    QList<QByteArray> patientInfo = file2list("/home/hdu/Pharmacy_Robot/" + userID + ".txt");
-    if(patientInfo.size() == 0)
-    {
-        ui->nameLabel->setText("Name:Not Found");
-        return;
-    }
-    ui->nameLabel->setText("Name:" + patientInfo[0]);
-    for(int i = 1; i < patientInfo.size(); i++)
-    {
-        if(patientInfo[i].size() == 0)
+        totalDrugInfo = file2drugInfo("/home/hdu/Pharmacy_Robot/drugInfo.txt");
+        QStringList requiredDrugID;
+        ui->drugListWidget->clear();
+        QString userID = reader->get14aUID().toUpper();
+        if(userID == "")
+        {
+            ui->idLabel->setText("No Card");
+            ui->nameLabel->setText("Name:");
+            delay(1000);
             continue;
-        QList<QByteArray> requiredDrugInfo = patientInfo[i].split(',');
-        if(requiredDrugInfo[0].startsWith('#'))
+        }
+        ui->idLabel->setText("ID:" + userID);
+        QList<QByteArray> patientInfo = file2list("/home/hdu/Pharmacy_Robot/" + userID + ".txt");
+        if(patientInfo.size() == 0)
+        {
+            ui->nameLabel->setText("Name:Not Found");
             continue;
-        ui->drugListWidget->addItem(requiredDrugInfo[1]);
-        requiredDrugID.append(requiredDrugInfo[0]);
-    }
-    for(QString ID : requiredDrugID)
-    {
-        QPointF vPoint = totalDrugInfo[ID];
-        servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
-        servoDriver->move_waitMotionSent();
-        servoDriver->move_waitMotionFinished();
-        delay(500);
-//        emit getOCRResult();
-//        delay(500);
-        QPointF catchPoint = linearTransform(vPoint, visualRect);
-        servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
-        delay(500);
+        }
+        ui->nameLabel->setText("Name:" + patientInfo[0]);
+        for(int i = 1; i < patientInfo.size(); i++)
+        {
+            if(patientInfo[i].size() == 0)
+                continue;
+            QList<QByteArray> requiredDrugInfo = patientInfo[i].split(',');
+            if(requiredDrugInfo[0].startsWith('#'))
+                continue;
+            ui->drugListWidget->addItem(requiredDrugInfo[1]);
+            requiredDrugID.append(requiredDrugInfo[0]);
+        }
+        for(QString ID : requiredDrugID)
+        {
+            if(!isProcessing)
+                break;
+            QPointF vPoint = totalDrugInfo[ID];
+            servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
+            servoDriver->move_waitMotionSent();
+            servoDriver->move_waitMotionFinished();
+            delay(500);
+            //        emit getOCRResult();
+            //        delay(500);
+            QPointF catchPoint = linearTransform(vPoint, visualRect);
+            if(!isProcessing)
+                break;
+            servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
+            delay(500);
+        }
     }
 }
 
@@ -180,4 +188,12 @@ void MainWindow::delay(int ms)
 void MainWindow::on_cameraGroupBox_clicked(bool checked)
 {
     ui->cameraLabel->setVisible(checked);
+}
+
+void MainWindow::on_stopButton_clicked()
+{
+    isProcessing = false;
+    servoDriver->move_stop();
+    servoDriver->rotate_stopSuck();
+
 }

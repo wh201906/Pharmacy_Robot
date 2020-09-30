@@ -50,9 +50,10 @@ private slots:
 
     void on_cameraTestButton_clicked();
 
-    void on_testButton_clicked();
-
     void on_cameraGroupBox_clicked(bool checked);
+
+    void on_startButton_clicked();
+    void on_stopButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -68,6 +69,8 @@ private:
     QRect visualRect;
     cv::Mat* cameraFrame;
     QPixmap mat2Pixmap(cv::Mat *mat);
+
+    bool isProcessing = false;
 signals:
     void getFrameAddr();
     void getOCRResult();
