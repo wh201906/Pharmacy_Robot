@@ -157,6 +157,8 @@ QMap<QString, QPointF> MainWindow::file2drugInfo(QString path)
         return result;
     for(QString line : lineList)
     {
+        if(line.length() == 0)
+            continue;
         currItem = line.split(',');
         result.insert(currItem[0], QPointF(currItem[2].toDouble(), currItem[3].toDouble()));
     }

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>491</width>
+    <width>818</width>
     <height>706</height>
    </rect>
   </property>
@@ -37,6 +37,11 @@
       </item>
       <item>
        <widget class="QLabel" name="idLabel">
+        <property name="font">
+         <font>
+          <pointsize>36</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>ID:</string>
         </property>
@@ -44,6 +49,11 @@
       </item>
       <item>
        <widget class="QLabel" name="nameLabel">
+        <property name="font">
+         <font>
+          <pointsize>36</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Name:</string>
         </property>
@@ -58,6 +68,11 @@
       </item>
       <item>
        <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>36</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Items:</string>
         </property>
@@ -70,6 +85,11 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>36</pointsize>
+         </font>
         </property>
        </widget>
       </item>
@@ -120,7 +140,7 @@
        <item>
         <widget class="QLabel" name="cameraLabel">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
