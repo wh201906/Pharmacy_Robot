@@ -132,6 +132,7 @@ void MainWindow::on_startButton_clicked()
             QPointF catchPoint = linearTransform(vPoint, visualRect);
             if(!isProcessing)
                 break;
+            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
             servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
             delay(500);
         }
