@@ -29,7 +29,7 @@ private slots:
 
     void on_disconnectButton_clicked();
 
-    void on_OCRCheckBox_stateChanged(int arg1);
+    void on_OCRButton_clicked();
 
 private:
     Ui::CameraTestDialog *ui;
@@ -42,7 +42,7 @@ signals:
     void openCam(int id);
     void getFrameAddr();
     void closeCam();
-    void setOCRState(bool enabled);
+    void getOCRResult();
 };
 
 #endif // CAMERATESTDIALOG_H

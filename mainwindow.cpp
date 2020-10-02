@@ -127,12 +127,13 @@ void MainWindow::on_startButton_clicked()
             servoDriver->move_waitMotionSent();
             servoDriver->move_waitMotionFinished();
             delay(500);
-            //        emit getOCRResult();
-            //        delay(500);
+
+            emit getOCRResult();
+            delay(500);
             QPointF catchPoint = linearTransform(vPoint, visualRect);
             if(!isProcessing)
                 break;
-            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
+//            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
             servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
             delay(500);
         }

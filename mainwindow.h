@@ -74,5 +74,6 @@ private:
 signals:
     void getFrameAddr();
     void getOCRResult();
+    void getRectResult();
 };
 #endif // MAINWINDOW_H

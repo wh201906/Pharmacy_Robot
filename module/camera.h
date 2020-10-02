@@ -10,6 +10,7 @@
 #include <QFile>
 #include <QImage>
 #include <QProcess>
+#include <QElapsedTimer>
 #include <opencv.hpp>
 #include <opencv2/imgproc/types_c.h>
 
@@ -24,7 +25,7 @@ public slots:
     void getFrameAddr();
     void closeCam();
     void getOCRResult();
-    void setOCRState(bool enabled);
+    void getRectResult();
 signals:
     void OCRResult(QString result);
     void frameRefreshed();
@@ -39,11 +40,10 @@ private:
     cv::Mat* rawFrame;
     cv::Mat* roiFrame;
     cv::Mat* roiOfRawFrame;
-    QFile* roiFile;
     QFile* ocrResultFile;
-    QRect drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter);
+    QProcess* pyProcess;
+    QRect drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter = nullptr);
     QString callOCR();
-    bool ocrState = false;
 };
 
 #endif // CAMERA_H

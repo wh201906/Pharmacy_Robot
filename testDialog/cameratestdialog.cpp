@@ -10,7 +10,7 @@ CameraTestDialog::CameraTestDialog(Camera* camera, QWidget *parent) :
     connect(this, &CameraTestDialog::openCam, camera, &Camera::openCam);
     connect(this, &CameraTestDialog::getFrameAddr, camera, &Camera::getFrameAddr);
     connect(this, &CameraTestDialog::closeCam, camera, &Camera::closeCam);
-    connect(this, &CameraTestDialog::setOCRState, camera, &Camera::setOCRState);
+    connect(this, &CameraTestDialog::getOCRResult, camera, &Camera::getOCRResult);
     connect(camera, &Camera::frameRefreshed, this, &CameraTestDialog::onFrameRefreshed);
     connect(camera, &Camera::frameAddr, this, &CameraTestDialog::onFrameAddrFetched);
     connect(camera, &Camera::OCRResult, this, &CameraTestDialog::onOCRResultFetched);
@@ -29,7 +29,7 @@ void CameraTestDialog::onDrugRectFetched(QRect rect)
 
 void CameraTestDialog::onOCRResultFetched(QString result)
 {
-//    qDebug() << result;
+    ui->OCREdit->setText(result);
 }
 
 void CameraTestDialog::onFrameRefreshed()
@@ -58,7 +58,6 @@ void CameraTestDialog::onFrameAddrFetched(cv::Mat* rawAddr, cv::Mat* roiAddr, cv
 void CameraTestDialog::on_connectButton_clicked()
 {
     emit openCam(ui->camIDEdit->text().toInt());
-    emit getFrameAddr();
 }
 
 void CameraTestDialog::on_disconnectButton_clicked()
@@ -71,8 +70,7 @@ QPixmap CameraTestDialog::mat2Pixmap(cv::Mat* mat)
     return QPixmap::fromImage(QImage((const unsigned char*)mat->data, mat->cols, mat->rows, mat->step, QImage::Format_RGB888).rgbSwapped());
 }
 
-void CameraTestDialog::on_OCRCheckBox_stateChanged(int arg1)
+void CameraTestDialog::on_OCRButton_clicked()
 {
-    emit setOCRState(arg1 == Qt::Checked);
-    emit getFrameAddr();
+    emit getOCRResult();
 }
