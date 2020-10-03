@@ -9,12 +9,24 @@ Camera::Camera(QThread* thread, QObject *parent) : QObject(parent)
     roiFrame = new cv::Mat;
     roiOfRawFrame = new cv::Mat;
     ocrResultFile = new QFile("/home/hdu/Pharmacy_Robot/ocr.txt");
-    refreshTimer = new QTimer();
+    refreshTimer = new QTimer;
+    ocrTimer = new QElapsedTimer;
     pyProcess = new QProcess;
     pyProcess->moveToThread(thread);
     refreshTimer->moveToThread(thread);
     refreshTimer->setInterval(50);
     connect(refreshTimer, &QTimer::timeout, this, &Camera::onRefreshTimeout);
+    connect(pyProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &Camera::onOCRProcessFinished);
+}
+
+void Camera::onOCRProcessFinished(int exitCode, QProcess::ExitStatus state)
+{
+    qDebug() << "OCR Stoped" << ocrTimer->elapsed();
+
+    ocrResultFile->open(QFile::Text | QFile::ReadOnly);
+    QString result = ocrResultFile->readAll();
+    ocrResultFile->close();
+    emit OCRResult(result);
 }
 
 void Camera::openCam(int id)
@@ -68,7 +80,7 @@ void Camera::getRectResult()
 void Camera::getOCRResult()
 {
     if(cv::imwrite("/home/hdu/Pharmacy_Robot/roi.jpg", *roiFrame))
-        emit OCRResult(callOCR());
+        callOCR();
 }
 
 QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter)
@@ -187,17 +199,9 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
     return res;
 }
 
-QString Camera::callOCR()
+void Camera::callOCR()
 {
-    QElapsedTimer timer;
-    timer.start();
+    ocrTimer->start();
     qDebug() << "OCR Started";
     pyProcess->start("python", {"/home/hdu/chineseocr_lite-onnx/detect_mine.py"});
-    pyProcess->waitForFinished(10000);
-    qDebug() << "OCR Stoped" << timer.elapsed();
-
-    ocrResultFile->open(QFile::Text | QFile::ReadOnly);
-    QString result = ocrResultFile->readAll();
-    ocrResultFile->close();
-    return result;
 }

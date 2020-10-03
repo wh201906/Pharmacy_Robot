@@ -29,7 +29,8 @@ void CameraTestDialog::onDrugRectFetched(QRect rect)
 
 void CameraTestDialog::onOCRResultFetched(QString result)
 {
-    ui->OCREdit->setText(result);
+    qDebug() << "OCRResult:" << result.length();
+    ui->OCRLabel->setText(result);
 }
 
 void CameraTestDialog::onFrameRefreshed()

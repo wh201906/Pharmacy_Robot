@@ -61,6 +61,7 @@ private:
     ServoDriver* servoDriver;
     Camera* camera;
     QThread* cameraThread;
+    QString ocrResult;
 
     ServoTestDialog* servoTestDialog;
     RFIDTestDialog* myRFIDTestDialog;

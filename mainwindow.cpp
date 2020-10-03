@@ -36,7 +36,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::onOCRResultFetched(QString result)
 {
-    ui->ocrResultLabel->setText(result);
+    ocrResult = result;
 }
 
 void MainWindow::onFrameRefreshed()
@@ -127,9 +127,12 @@ void MainWindow::on_startButton_clicked()
             servoDriver->move_waitMotionSent();
             servoDriver->move_waitMotionFinished();
             delay(500);
-
+            ocrResult = "";
             emit getOCRResult();
             delay(500);
+            if(ocrResult == "")
+                continue;
+
             QPointF catchPoint = linearTransform(vPoint, visualRect);
             if(!isProcessing)
                 break;
@@ -199,5 +202,6 @@ void MainWindow::on_stopButton_clicked()
     isProcessing = false;
     servoDriver->move_stop();
     servoDriver->rotate_stopSuck();
-
 }
+
+//double MainWindow::on

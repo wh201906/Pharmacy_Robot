@@ -26,6 +26,7 @@ public slots:
     void closeCam();
     void getOCRResult();
     void getRectResult();
+    void onOCRProcessFinished(int exitCode, QProcess::ExitStatus state);
 signals:
     void OCRResult(QString result);
     void frameRefreshed();
@@ -42,8 +43,9 @@ private:
     cv::Mat* roiOfRawFrame;
     QFile* ocrResultFile;
     QProcess* pyProcess;
+    QElapsedTimer* ocrTimer;
     QRect drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter = nullptr);
-    QString callOCR();
+    void callOCR();
 };
 
 #endif // CAMERA_H

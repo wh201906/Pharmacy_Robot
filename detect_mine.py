@@ -17,7 +17,7 @@ print(f.writable())
 res = ocrhandle.text_predict(img, img_w//32*32)
 for i, r in enumerate(res):
     rect, txt, confidence = r
-    f.write(txt)
+    f.write(txt+'\n')
 
 f.close()
 print(time.time()-startTime)
