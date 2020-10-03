@@ -8,7 +8,7 @@ Camera::Camera(QThread* thread, QObject *parent) : QObject(parent)
     rawFrame = new cv::Mat;
     roiFrame = new cv::Mat;
     roiOfRawFrame = new cv::Mat;
-    ocrResultFile = new QFile("/home/hdu/Pharmacy_Robot/ocr.txt");
+    ocrResultFile = new QFile("/home/hdu/Pharmacy_Robot_RAM/ocr.txt");
     refreshTimer = new QTimer;
     ocrTimer = new QElapsedTimer;
     pyProcess = new QProcess;
@@ -79,7 +79,7 @@ void Camera::getRectResult()
 
 void Camera::getOCRResult()
 {
-    if(cv::imwrite("/home/hdu/Pharmacy_Robot/roi.jpg", *roiFrame))
+    if(cv::imwrite("/home/hdu/Pharmacy_Robot_RAM/roi.jpg", *roiFrame))
         callOCR();
 }
 
