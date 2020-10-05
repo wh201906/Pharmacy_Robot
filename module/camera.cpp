@@ -113,7 +113,7 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
     cv::Mat edgeX_Y_Mat;
     cv::Mat edgeX_Y_Mat_out;
     cv::Mat g_edgeX_Y_Mat_out;
-    cv::Mat open, close, open_2;
+    cv::Mat open, dilate, open_2;
 
     //		cvtColor(rFrame, hsvMat, COLOR_BGR2HSV);
     //边缘检测
@@ -125,16 +125,13 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
     //图像增强
     convertScaleAbs(edgeX_Y_Mat, edgeX_Y_Mat_out);
     //二值化
-    threshold(edgeX_Y_Mat_out, g_edgeX_Y_Mat_out, 250, 255, THRESH_BINARY);//160//180
-    //开运算
-    cv::Mat element = getStructuringElement(MORPH_RECT, Size(2, 1), Point(-1, -1));
-    morphologyEx(g_edgeX_Y_Mat_out, open, 2, element, Point(-1, -1));
-    //闭运算
-    element = getStructuringElement(MORPH_RECT, Size(4, 5), Point(-1, -1));
-    morphologyEx(open, close, 3, element, Point(-1, -1));
+    threshold(edgeX_Y_Mat_out, g_edgeX_Y_Mat_out, 190, 255, THRESH_BINARY);
+    //膨胀./ramdisk.sh 123456
+    cv::Mat element = getStructuringElement(MORPH_RECT, Size(4, 3), Point(-1, -1));
+    morphologyEx(g_edgeX_Y_Mat_out, dilate, 1, element, Point(-1, -1));
     //连通域标记
     cv::Mat labels, stats, centroids;
-    int num = cv::connectedComponentsWithStats(close, labels, stats, centroids);
+    int num = cv::connectedComponentsWithStats(dilate, labels, stats, centroids);
     if(stats.rows > 1) //除背景外有对象
     {
         //最大周长
@@ -162,20 +159,24 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
         int y_drug = stats.at<int>(max_i, 1);
         int width_drug = stats.at<int>(max_i, 2);
         int height_drug = stats.at<int>(max_i, 3);
+        float width_height = width_drug / height_drug;
+        float height_width = height_drug / width_drug;
 
         cv::Rect rect;
         rect.x = x_drug;
         rect.y = y_drug;
         rect.width = width_drug;
         rect.height = height_drug;
-//        if(max_Perimeter > 500 && center_x_drug > center_x_gFrame - tolerance_x && center_x_drug < center_x_gFrame + tolerance_x && center_y_drug > center_y_gFrame - tolerance_y && center_y_drug < center_y_gFrame + tolerance_y)
-        if(max_Perimeter > 100)
+        printf("width/height=%f \n max_perimeter=%d \n", width_height, max_Perimeter);
+        if(max_Perimeter > 430 && width_height < 4 && height_width < 1.2)
         {
             Point p1 = Point(x_drug, y_drug);
             Point p2 = Point(x_drug + width_drug, y_drug + height_drug);
             Rect roi = Rect(p1, p2);
             if(roi.width && roi.height && roiFrame != nullptr)
+            {
                 *roiFrame = gFrame(roi);
+            }
             rectangle(gFrame, rect, CV_RGB(255, 0, 0), 2, 8, 0);
             if(isCenter != nullptr)
                 *isCenter = true;
