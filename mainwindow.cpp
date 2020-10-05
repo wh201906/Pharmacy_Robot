@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(camera, &Camera::frameAddr, this, &MainWindow::onFrameAddrFetched);
     connect(camera, &Camera::OCRResult, this, &MainWindow::onOCRResultFetched);
     connect(this, &MainWindow::getOCRResult, camera, &Camera::getOCRResult);
+    qDebug() << getSimilarity("ABCDEFG", "ABCHIJK");
 }
 
 
@@ -213,4 +214,26 @@ void MainWindow::on_stopButton_clicked()
     servoDriver->rotate_stopSuck();
 }
 
+
 //double MainWindow::on
+
+double MainWindow::getSimilarity(const QString& str1, const QString& str2)
+{
+    quint64 multiply = 0, freq1 = 0, freq2 = 0;
+    QSet<QChar> allCharSet;
+    for(QChar ch : str1)
+        allCharSet.insert(ch);
+    for(QChar ch : str2)
+        allCharSet.insert(ch);
+
+    for(QChar ch : allCharSet)
+    {
+        int c1 = str1.count(ch);
+        int c2 = str2.count(ch);
+        multiply += c1 * c2;
+        freq1 += c1 * c1;
+        freq2 += c2 * c2;
+    }
+    double res = multiply / sqrt(freq1) / sqrt(freq2);
+    return res;
+}
