@@ -91,7 +91,7 @@ void MainWindow::on_startButton_clicked()
     while(isProcessing)
     {
         totalDrugInfo = file2drugInfo("/home/hdu/Pharmacy_Robot_RAM/drugInfo.txt");
-        QStringList requiredDrugID;
+        QMap<QString, QString> requiredDrugInfo;
         ui->drugListWidget->clear();
         QString userID = reader->get14aUID().toUpper();
         if(userID == "")
@@ -111,19 +111,20 @@ void MainWindow::on_startButton_clicked()
         ui->nameLabel->setText("Name:" + patientInfo[0]);
         for(int i = 1; i < patientInfo.size(); i++)
         {
-            if(patientInfo[i].size() == 0)
+            if(patientInfo[i].size() < 2)
                 continue;
-            QList<QByteArray> requiredDrugInfo = patientInfo[i].split(',');
-            if(requiredDrugInfo[0].startsWith('#'))
+            QList<QByteArray> requiredRawDrugInfo = patientInfo[i].split(',');
+            if(requiredRawDrugInfo[0].startsWith('#'))
                 continue;
-            ui->drugListWidget->addItem(requiredDrugInfo[1]);
-            requiredDrugID.append(requiredDrugInfo[0]);
+            ui->drugListWidget->addItem(requiredRawDrugInfo[1]);
+            requiredDrugInfo.insert(requiredRawDrugInfo[0], requiredRawDrugInfo[1]);
         }
-        for(QString ID : requiredDrugID)
+
+        for(QMap<QString, QString>::iterator it = requiredDrugInfo.begin(); it != requiredDrugInfo.end(); it++)
         {
             if(!isProcessing)
                 break;
-            QPointF vPoint = totalDrugInfo[ID];
+            QPointF vPoint = totalDrugInfo[it.key()];
             servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
             servoDriver->move_waitMotionSent();
             servoDriver->move_waitMotionFinished();
@@ -138,11 +139,24 @@ void MainWindow::on_startButton_clicked()
             }
             if(ocrResult == "")
                 continue;
-            else
+
+            QStringList resultList = ocrResult.split('\n');
+            qDebug() << resultList;
+            int maxMatchPos = 0;
+            double matchVal = 0, maxMatchVal = 0;
+            for(int i = 0; i < resultList.size(); i++)
             {
-                QStringList resultList = ocrResult.split('\n');
-                qDebug() << resultList;
+                matchVal = getSimilarity(resultList[i], it.value());
+                if(matchVal > maxMatchVal)
+                {
+                    maxMatchPos = i;
+                    maxMatchVal = matchVal;
+                }
             }
+            qDebug() << "match index:" << maxMatchVal;
+            if(maxMatchVal < 0.5)
+                continue;
+            qDebug() << "match state:" << it.value() << resultList[maxMatchPos];
             QPointF catchPoint = linearTransform(vPoint, visualRect);
             if(!isProcessing)
                 break;

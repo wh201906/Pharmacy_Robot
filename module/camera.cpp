@@ -167,7 +167,7 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
         rect.y = y_drug;
         rect.width = width_drug;
         rect.height = height_drug;
-        printf("width/height=%f \n max_perimeter=%d \n", width_height, max_Perimeter);
+        //printf("width/height=%f \n max_perimeter=%d \n", width_height, max_Perimeter);
         if(max_Perimeter > 430 && width_height < 4 && height_width < 1.2)
         {
             Point p1 = Point(x_drug, y_drug);
