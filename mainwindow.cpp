@@ -120,50 +120,70 @@ void MainWindow::on_startButton_clicked()
             requiredDrugInfo.insert(requiredRawDrugInfo[0], requiredRawDrugInfo[1]);
         }
 
-        for(QMap<QString, QString>::iterator it = requiredDrugInfo.begin(); it != requiredDrugInfo.end(); it++)
+        QMap<QString, QString> errorDrugInfo;
+        for(int retry = 0; retry < 3; retry++)
         {
             if(!isProcessing)
                 break;
-            QPointF vPoint = totalDrugInfo[it.key()];
-            servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
-            servoDriver->move_waitMotionSent();
-            servoDriver->move_waitMotionFinished();
-            delay(500);
-            ocrResult = "";
-            emit getOCRResult();
-            for(int i = 0; i < 15; i++)
+            for(QMap<QString, QString>::iterator it = requiredDrugInfo.begin(); it != requiredDrugInfo.end(); it++)
             {
-                delay(100);
-                if(ocrResult != "")
+                if(!isProcessing)
                     break;
-            }
-            if(ocrResult == "")
-                continue;
-
-            QStringList resultList = ocrResult.split('\n');
-            qDebug() << resultList;
-            int maxMatchPos = 0;
-            double matchVal = 0, maxMatchVal = 0;
-            for(int i = 0; i < resultList.size(); i++)
-            {
-                matchVal = getSimilarity(resultList[i], it.value());
-                if(matchVal > maxMatchVal)
+                QPointF vPoint = totalDrugInfo[it.key()];
+                servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
+                servoDriver->move_waitMotionSent();
+                servoDriver->move_waitMotionFinished();
+                delay(500);
+                ocrResult = "";
+                emit getOCRResult();
+                for(int i = 0; i < 25; i++)
                 {
-                    maxMatchPos = i;
-                    maxMatchVal = matchVal;
+                    delay(100);
+                    if(ocrResult != "")
+                        break;
                 }
+                if(ocrResult == "")
+                {
+                    errorDrugInfo.insert(it.key(), it.value());
+                    continue;
+                }
+
+                QStringList resultList = ocrResult.split('\n');
+                qDebug() << resultList;
+                int maxMatchPos = 0;
+                double matchVal = 0, maxMatchVal = 0;
+                for(int i = 0; i < resultList.size(); i++)
+                {
+                    matchVal = getSimilarity(resultList[i], it.value());
+                    if(matchVal > maxMatchVal)
+                    {
+                        maxMatchPos = i;
+                        maxMatchVal = matchVal;
+                    }
+                }
+                qDebug() << "match index:" << maxMatchVal;
+                if(maxMatchVal < 0.5)
+                {
+                    errorDrugInfo.insert(it.key(), it.value());
+                    continue;
+                }
+                qDebug() << "match state:" << it.value() << resultList[maxMatchPos];
+                QPointF catchPoint = linearTransform(vPoint, visualRect);
+                if(!isProcessing)
+                    break;
+                //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
+                //            servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
+                //            delay(500);
             }
-            qDebug() << "match index:" << maxMatchVal;
-            if(maxMatchVal < 0.5)
-                continue;
-            qDebug() << "match state:" << it.value() << resultList[maxMatchPos];
-            QPointF catchPoint = linearTransform(vPoint, visualRect);
-            if(!isProcessing)
+            qDebug() << errorDrugInfo;
+            if(errorDrugInfo.isEmpty())
                 break;
-//            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
-//            servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
-//            delay(500);
+            requiredDrugInfo = errorDrugInfo;
         }
+        qDebug() << errorDrugInfo;
+
+
+
     }
 }
 
