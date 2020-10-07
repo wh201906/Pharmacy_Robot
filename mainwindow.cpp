@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(camera, &Camera::frameAddr, this, &MainWindow::onFrameAddrFetched);
     connect(camera, &Camera::OCRResult, this, &MainWindow::onOCRResultFetched);
     connect(this, &MainWindow::getOCRResult, camera, &Camera::getOCRResult);
+    connect(this, &MainWindow::setLabelBuffer, camera, &Camera::setLabelBuffer);
     qDebug() << getSimilarity("ABCDEFG", "ABCHIJK");
 }
 
@@ -145,6 +146,7 @@ void MainWindow::on_startButton_clicked()
                 if(ocrResult == "")
                 {
                     errorDrugInfo.insert(it.key(), it.value());
+                    emit setLabelBuffer("Unknown");
                     continue;
                 }
 
@@ -165,15 +167,18 @@ void MainWindow::on_startButton_clicked()
                 if(maxMatchVal < 0.5)
                 {
                     errorDrugInfo.insert(it.key(), it.value());
+                    emit setLabelBuffer("Unknown");
                     continue;
                 }
                 qDebug() << "match state:" << it.value() << resultList[maxMatchPos];
+                emit setLabelBuffer(it.value());
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
                     break;
                 //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
-                //            servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
-                //            delay(500);
+                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
+                delay(500);
+                emit setLabelBuffer("");
             }
             qDebug() << errorDrugInfo;
             if(errorDrugInfo.isEmpty())

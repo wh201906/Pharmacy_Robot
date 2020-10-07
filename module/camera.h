@@ -27,6 +27,7 @@ public slots:
     void getOCRResult();
     void getRectResult();
     void onOCRProcessFinished(int exitCode, QProcess::ExitStatus state);
+    void setLabelBuffer(QString bufferText);
 signals:
     void OCRResult(QString result);
     void frameRefreshed();
@@ -44,6 +45,7 @@ private:
     QFile* ocrResultFile;
     QProcess* pyProcess;
     QElapsedTimer* ocrTimer;
+    QString labelBuffer;
     QRect drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resultFrame, bool* isCenter = nullptr);
     void callOCR();
 };

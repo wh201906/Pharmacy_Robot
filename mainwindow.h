@@ -77,5 +77,6 @@ signals:
     void getFrameAddr();
     void getOCRResult();
     void getRectResult();
+    void setLabelBuffer(QString bufferText);
 };
 #endif // MAINWINDOW_H

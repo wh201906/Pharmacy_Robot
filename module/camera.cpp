@@ -19,6 +19,11 @@ Camera::Camera(QThread* thread, QObject *parent) : QObject(parent)
     connect(pyProcess, static_cast<void(QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &Camera::onOCRProcessFinished);
 }
 
+void Camera::setLabelBuffer(QString bufferText)
+{
+    labelBuffer = bufferText;
+}
+
 void Camera::onOCRProcessFinished(int exitCode, QProcess::ExitStatus state)
 {
     qDebug() << "OCR Stoped" << ocrTimer->elapsed();
@@ -79,6 +84,7 @@ void Camera::getRectResult()
 
 void Camera::getOCRResult()
 {
+    labelBuffer = "";
     if(cv::imwrite("/home/hdu/Pharmacy_Robot_RAM/roi.jpg", *roiFrame))
         callOCR();
 }
