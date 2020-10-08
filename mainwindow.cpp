@@ -142,11 +142,11 @@ void MainWindow::on_startButton_clicked()
                 if(!isProcessing)
                     break;
                 //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
-                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
+                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 75);
                 delay(500);
                 emit setLabelBuffer("");
+                qDebug() << QString("error info after %1 try").arg(retry + 1) + "\n" << errorDrugInfo;
             }
-            qDebug() << errorDrugInfo;
             if(errorDrugInfo.isEmpty())
                 break;
             if(retry < 2)
@@ -162,6 +162,12 @@ void MainWindow::on_startButton_clicked()
             errorDrugInfo.clear();
             for(QMap<QString, QPointF>::iterator totalIt = totalDrugInfo.begin(); totalIt != totalDrugInfo.end(); totalIt++)
             {
+                if(requiredDrugInfo.isEmpty())
+                {
+                    emit setLabelBuffer("");
+                    break;
+                }
+                qDebug() << "error info:" << errorDrugInfo << requiredDrugInfo;
                 if(!isProcessing)
                     break;
                 QPointF vPoint = gotoPos(totalIt.key());
@@ -173,6 +179,7 @@ void MainWindow::on_startButton_clicked()
                 }
                 for(reqIt = requiredDrugInfo.begin(); reqIt != requiredDrugInfo.end(); reqIt++)
                 {
+                    qDebug() << "currDrug:" << reqIt.value() << totalIt.key();
                     if(callOCR() && getOCRMatchState(reqIt.value()))
                     {
                         emit setLabelBuffer(reqIt.value());
@@ -189,7 +196,7 @@ void MainWindow::on_startButton_clicked()
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
                     break;
-                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
+                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 75);
                 delay(500);
                 emit setLabelBuffer("");
             }
