@@ -186,6 +186,15 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
             rectangle(gFrame, rect, CV_RGB(255, 0, 0), 2, 8, 0);
             if(isCenter != nullptr)
                 *isCenter = true;
+            //在图上显示药品名
+            if(labelBuffer != "")
+            {
+                char size = 5;//调节字体的y坐标
+                std::string s_labelBuffer = (const char*)labelBuffer.toLocal8Bit();
+                //printf("\n!!!!!!!%s\n", s_labelBuffer.c_str());
+                cv::Point p = cv::Point(rect.x, rect.y - size);
+                cv::putText(gFrame, s_labelBuffer, p, cv::FONT_HERSHEY_TRIPLEX, 0.7, cv::Scalar(0, 0, 255), 1);
+            }
 //            printf("rect");
         }
         else
