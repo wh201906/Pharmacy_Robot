@@ -73,6 +73,7 @@ private:
     QMap<QString, QPointF> totalDrugInfo;
     QRect visualRect;
     cv::Mat* cameraFrame;
+    QFont tableFont;
     QPixmap mat2Pixmap(cv::Mat *mat);
 
     bool isProcessing = false;

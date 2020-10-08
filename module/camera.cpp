@@ -193,7 +193,7 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
                 std::string s_labelBuffer = (const char*)labelBuffer.toLocal8Bit();
                 //printf("\n!!!!!!!%s\n", s_labelBuffer.c_str());
                 cv::Point p = cv::Point(rect.x, rect.y - size);
-                cv::putText(gFrame, s_labelBuffer, p, cv::FONT_HERSHEY_TRIPLEX, 0.7, cv::Scalar(0, 0, 255), 1);
+                cv::putText(gFrame, s_labelBuffer, p, cv::FONT_HERSHEY_TRIPLEX, 0.8, cv::Scalar(0, 0, 255), 1);
             }
 //            printf("rect");
         }

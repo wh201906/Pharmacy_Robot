@@ -43,7 +43,7 @@
          </font>
         </property>
         <property name="text">
-         <string>ID:</string>
+         <string>Patient ID:</string>
         </property>
        </widget>
       </item>
@@ -55,7 +55,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Name:</string>
+         <string>Patient Name:</string>
         </property>
        </widget>
       </item>
@@ -79,18 +79,34 @@
        </widget>
       </item>
       <item>
-       <widget class="QListWidget" name="drugListWidget">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+       <widget class="QTableWidget" name="drugTableWidget">
         <property name="font">
          <font>
-          <pointsize>36</pointsize>
+          <pointsize>32</pointsize>
          </font>
         </property>
+        <property name="columnCount">
+         <number>2</number>
+        </property>
+        <attribute name="horizontalHeaderCascadingSectionResizes">
+         <bool>false</bool>
+        </attribute>
+        <attribute name="horizontalHeaderStretchLastSection">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+        <column>
+         <property name="text">
+          <string>ID</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </column>
        </widget>
       </item>
       <item>

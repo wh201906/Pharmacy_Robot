@@ -27,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this, &MainWindow::getOCRResult, camera, &Camera::getOCRResult);
     connect(this, &MainWindow::setLabelBuffer, camera, &Camera::setLabelBuffer);
     qDebug() << getSimilarity("ABCDEFG", "ABCHIJK");
+    ui->cameraGroupBox->setVisible(false);
+    tableFont = ui->drugTableWidget->font();
+    tableFont.setPixelSize(32);
+    ui->drugTableWidget->setFont(tableFont);
 }
 
 
@@ -93,23 +97,26 @@ void MainWindow::on_startButton_clicked()
     {
         totalDrugInfo = file2drugInfo("/home/hdu/Pharmacy_Robot_RAM/drugInfo.txt");
         QMap<QString, QString> requiredDrugInfo;
-        ui->drugListWidget->clear();
+        ui->drugTableWidget->clear();
+        ui->drugTableWidget->setFont(tableFont);
+        ui->drugTableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("ID"));
+        ui->drugTableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Name"));
         QString userID = reader->get14aUID().toUpper();
         if(userID == "")
         {
             ui->idLabel->setText("No Card");
-            ui->nameLabel->setText("Name:");
+            ui->nameLabel->setText("Patient Name:");
             delay(1000);
             continue;
         }
-        ui->idLabel->setText("ID:" + userID);
+        ui->idLabel->setText("Patient ID:" + userID);
         QList<QByteArray> patientInfo = file2list("/home/hdu/Pharmacy_Robot_RAM/" + userID + ".txt");
         if(patientInfo.size() == 0)
         {
             ui->nameLabel->setText("Name:Not Found");
             continue;
         }
-        ui->nameLabel->setText("Name:" + patientInfo[0]);
+        ui->nameLabel->setText("Patient Name:" + patientInfo[0]);
         for(int i = 1; i < patientInfo.size(); i++)
         {
             if(patientInfo[i].size() < 2)
@@ -117,7 +124,10 @@ void MainWindow::on_startButton_clicked()
             QList<QByteArray> requiredRawDrugInfo = patientInfo[i].split(',');
             if(requiredRawDrugInfo[0].startsWith('#'))
                 continue;
-            ui->drugListWidget->addItem(requiredRawDrugInfo[1]);
+            ui->drugTableWidget->setRowCount(ui->drugTableWidget->rowCount() + 1);
+            qDebug() << QString(requiredRawDrugInfo[0]) << QString(requiredRawDrugInfo[1]);
+            ui->drugTableWidget->setItem(ui->drugTableWidget->rowCount() - 1, 0, new QTableWidgetItem(QString(requiredRawDrugInfo[0])));
+            ui->drugTableWidget->setItem(ui->drugTableWidget->rowCount() - 1, 1, new QTableWidgetItem(QString(requiredRawDrugInfo[1])));
             requiredDrugInfo.insert(requiredRawDrugInfo[0], requiredRawDrugInfo[1]);
         }
 
@@ -134,10 +144,10 @@ void MainWindow::on_startButton_clicked()
                 if((!callOCR()) || (!getOCRMatchState(it.value())))
                 {
                     errorDrugInfo.insert(it.key(), it.value());
-                    emit setLabelBuffer("Unknown");
+                    emit setLabelBuffer("Not Match");
                     continue;
                 }
-                emit setLabelBuffer(it.value());
+                emit setLabelBuffer(it.key());
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
                     break;
@@ -174,7 +184,7 @@ void MainWindow::on_startButton_clicked()
                 QMap<QString, QString>::iterator reqIt;
                 if(!callOCR())
                 {
-                    emit setLabelBuffer("Unknown");
+                    emit setLabelBuffer("Not Match");
                     continue;
                 }
                 for(reqIt = requiredDrugInfo.begin(); reqIt != requiredDrugInfo.end(); reqIt++)
@@ -182,7 +192,7 @@ void MainWindow::on_startButton_clicked()
                     qDebug() << "currDrug:" << reqIt.value() << totalIt.key();
                     if(callOCR() && getOCRMatchState(reqIt.value()))
                     {
-                        emit setLabelBuffer(reqIt.value());
+                        emit setLabelBuffer(reqIt.key());
                         break;
                     }
                     emit setLabelBuffer("Not Match");
@@ -192,7 +202,7 @@ void MainWindow::on_startButton_clicked()
                     continue;
                 }
                 requiredDrugInfo.remove(reqIt.key());
-                emit setLabelBuffer(reqIt.value());
+                emit setLabelBuffer(reqIt.key());
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
                     break;
@@ -201,12 +211,18 @@ void MainWindow::on_startButton_clicked()
                 emit setLabelBuffer("");
             }
         }
-        ui->drugListWidget->clear();
+        ui->drugTableWidget->clear();
+        ui->drugTableWidget->setFont(tableFont);
+        ui->drugTableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem("ID"));
+        ui->drugTableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem("Name"));
+        ui->drugTableWidget->setRowCount(100);
         if(!errorDrugInfo.isEmpty())
             isProcessing = false;
         for(QMap<QString, QString>::iterator it = errorDrugInfo.begin(); it != errorDrugInfo.end(); it++)
         {
-            ui->drugListWidget->addItem(it.value());
+            ui->drugTableWidget->setRowCount(ui->drugTableWidget->rowCount() + 1);
+            ui->drugTableWidget->setItem(ui->drugTableWidget->rowCount() - 1, 0, new QTableWidgetItem(QString(it.key())));
+            ui->drugTableWidget->setItem(ui->drugTableWidget->rowCount() - 1, 1, new QTableWidgetItem(QString(it.value())));
         }
 
     }
