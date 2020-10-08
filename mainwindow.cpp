@@ -130,19 +130,8 @@ void MainWindow::on_startButton_clicked()
             {
                 if(!isProcessing)
                     break;
-                QPointF vPoint = totalDrugInfo[it.key()];
-                servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
-                servoDriver->move_waitMotionSent();
-                servoDriver->move_waitMotionFinished();
-                delay(500);
-
-                if(!callOCR())
-                {
-                    errorDrugInfo.insert(it.key(), it.value());
-                    emit setLabelBuffer("Unknown");
-                    continue;
-                }
-                if(!getOCRMatchState(it.value()))
+                QPointF vPoint = gotoPos(it.key());
+                if((!callOCR()) || (!getOCRMatchState(it.value())))
                 {
                     errorDrugInfo.insert(it.key(), it.value());
                     emit setLabelBuffer("Unknown");
@@ -160,15 +149,44 @@ void MainWindow::on_startButton_clicked()
             qDebug() << errorDrugInfo;
             if(errorDrugInfo.isEmpty())
                 break;
-            requiredDrugInfo = errorDrugInfo;
-            errorDrugInfo.clear();
+            if(retry < 2)
+            {
+                requiredDrugInfo = errorDrugInfo;
+                errorDrugInfo.clear();
+            }
         }
         qDebug() << errorDrugInfo;
         if(!errorDrugInfo.isEmpty())
         {
-            for(QMap<QString, QPointF>::iterator it = totalDrugInfo.begin(); it != totalDrugInfo.end(); it++)
+            requiredDrugInfo = errorDrugInfo;
+            errorDrugInfo.clear();
+            for(QMap<QString, QPointF>::iterator totalIt = totalDrugInfo.begin(); totalIt != totalDrugInfo.end(); totalIt++)
             {
-
+                if(!isProcessing)
+                    break;
+                QPointF vPoint = gotoPos(totalIt.key());
+                QMap<QString, QString>::iterator reqIt;
+                for(reqIt = requiredDrugInfo.begin(); reqIt != requiredDrugInfo.end(); reqIt++)
+                {
+                    if(callOCR() && getOCRMatchState(reqIt.value()))
+                    {
+                        emit setLabelBuffer(reqIt.value());
+                        break;
+                    }
+                    emit setLabelBuffer("Not Match");
+                }
+                if(reqIt == requiredDrugInfo.end())
+                {
+                    errorDrugInfo.insert(reqIt.key(), reqIt.value());
+                    continue;
+                }
+                emit setLabelBuffer(reqIt.value());
+                QPointF catchPoint = linearTransform(vPoint, visualRect);
+                if(!isProcessing)
+                    break;
+                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 65);
+                delay(500);
+                emit setLabelBuffer("");
             }
         }
         ui->drugListWidget->clear();
@@ -297,4 +315,14 @@ bool MainWindow::getOCRMatchState(const QString& str)
     qDebug() << "match index:" << maxMatchVal;
     qDebug() << "match state: ori:" << str << " res:" << resultList[maxMatchPos];
     return maxMatchVal >= threshold;
+}
+
+QPointF MainWindow::gotoPos(const QString& ID)
+{
+    QPointF vPoint = totalDrugInfo[ID];
+    servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
+    servoDriver->move_waitMotionSent();
+    servoDriver->move_waitMotionFinished();
+    delay(500);
+    return vPoint;
 }
