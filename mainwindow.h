@@ -36,6 +36,8 @@ public:
     QPointF linearTransform(QPointF vPoint, QRect vRect);
     void delay(int ms);
     double getSimilarity(const QString &str1, const QString &str2);
+    bool callOCR();
+    bool getOCRMatchState(const QString &str);
 public slots:
     void onDrugRectFetched(QRect rect);
     void onFrameRefreshed();

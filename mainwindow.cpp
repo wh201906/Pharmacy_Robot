@@ -135,42 +135,19 @@ void MainWindow::on_startButton_clicked()
                 servoDriver->move_waitMotionSent();
                 servoDriver->move_waitMotionFinished();
                 delay(500);
-                ocrResult = "";
-                emit getOCRResult();
-                for(int i = 0; i < 25; i++)
-                {
-                    delay(100);
-                    if(ocrResult != "")
-                        break;
-                }
-                if(ocrResult == "")
-                {
-                    errorDrugInfo.insert(it.key(), it.value());
-                    emit setLabelBuffer("Unknown");
-                    continue;
-                }
 
-                QStringList resultList = ocrResult.split('\n');
-                qDebug() << resultList;
-                int maxMatchPos = 0;
-                double matchVal = 0, maxMatchVal = 0;
-                for(int i = 0; i < resultList.size(); i++)
-                {
-                    matchVal = getSimilarity(resultList[i], it.value());
-                    if(matchVal > maxMatchVal)
-                    {
-                        maxMatchPos = i;
-                        maxMatchVal = matchVal;
-                    }
-                }
-                qDebug() << "match index:" << maxMatchVal;
-                if(maxMatchVal < 0.5)
+                if(!callOCR())
                 {
                     errorDrugInfo.insert(it.key(), it.value());
                     emit setLabelBuffer("Unknown");
                     continue;
                 }
-                qDebug() << "match state:" << it.value() << resultList[maxMatchPos];
+                if(!getOCRMatchState(it.value()))
+                {
+                    errorDrugInfo.insert(it.key(), it.value());
+                    emit setLabelBuffer("Unknown");
+                    continue;
+                }
                 emit setLabelBuffer(it.value());
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
@@ -184,10 +161,21 @@ void MainWindow::on_startButton_clicked()
             if(errorDrugInfo.isEmpty())
                 break;
             requiredDrugInfo = errorDrugInfo;
+            errorDrugInfo.clear();
         }
         qDebug() << errorDrugInfo;
+        if(!errorDrugInfo.isEmpty())
+        {
+            for(QMap<QString, QPointF>::iterator it = totalDrugInfo.begin(); it != totalDrugInfo.end(); it++)
+            {
 
-
+            }
+        }
+        ui->drugListWidget->clear();
+        for(QMap<QString, QString>::iterator it = errorDrugInfo.begin(); it != errorDrugInfo.end(); it++)
+        {
+            ui->drugListWidget->addItem(it.value());
+        }
 
     }
 }
@@ -275,4 +263,38 @@ double MainWindow::getSimilarity(const QString& str1, const QString& str2)
     }
     double res = multiply / sqrt(freq1) / sqrt(freq2);
     return res;
+}
+
+bool MainWindow::callOCR()
+{
+    ocrResult = "";
+    emit getOCRResult();
+    for(int i = 0; i < 25; i++) // wait for 2500ms
+    {
+        delay(100);
+        if(ocrResult != "")
+            break;
+    }
+    return ocrResult != "";
+}
+
+bool MainWindow::getOCRMatchState(const QString& str)
+{
+    double threshold = 0.5;
+    QStringList resultList = ocrResult.split('\n');
+    qDebug() << resultList;
+    int maxMatchPos = 0;
+    double matchVal = 0, maxMatchVal = 0;
+    for(int i = 0; i < resultList.size(); i++)
+    {
+        matchVal = getSimilarity(resultList[i], str);
+        if(matchVal > maxMatchVal)
+        {
+            maxMatchPos = i;
+            maxMatchVal = matchVal;
+        }
+    }
+    qDebug() << "match index:" << maxMatchVal;
+    qDebug() << "match state: ori:" << str << " res:" << resultList[maxMatchPos];
+    return maxMatchVal >= threshold;
 }
