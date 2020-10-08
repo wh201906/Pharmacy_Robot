@@ -38,6 +38,7 @@ public:
     double getSimilarity(const QString &str1, const QString &str2);
     bool callOCR();
     bool getOCRMatchState(const QString &str);
+    QPointF gotoPos(const QString &ID);
 public slots:
     void onDrugRectFetched(QRect rect);
     void onFrameRefreshed();

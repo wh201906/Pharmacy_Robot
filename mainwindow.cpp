@@ -166,6 +166,11 @@ void MainWindow::on_startButton_clicked()
                     break;
                 QPointF vPoint = gotoPos(totalIt.key());
                 QMap<QString, QString>::iterator reqIt;
+                if(!callOCR())
+                {
+                    emit setLabelBuffer("Unknown");
+                    continue;
+                }
                 for(reqIt = requiredDrugInfo.begin(); reqIt != requiredDrugInfo.end(); reqIt++)
                 {
                     if(callOCR() && getOCRMatchState(reqIt.value()))
@@ -177,9 +182,9 @@ void MainWindow::on_startButton_clicked()
                 }
                 if(reqIt == requiredDrugInfo.end())
                 {
-                    errorDrugInfo.insert(reqIt.key(), reqIt.value());
                     continue;
                 }
+                requiredDrugInfo.remove(reqIt.key());
                 emit setLabelBuffer(reqIt.value());
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
@@ -190,6 +195,8 @@ void MainWindow::on_startButton_clicked()
             }
         }
         ui->drugListWidget->clear();
+        if(!errorDrugInfo.isEmpty())
+            isProcessing = false;
         for(QMap<QString, QString>::iterator it = errorDrugInfo.begin(); it != errorDrugInfo.end(); it++)
         {
             ui->drugListWidget->addItem(it.value());
@@ -298,7 +305,7 @@ bool MainWindow::callOCR()
 
 bool MainWindow::getOCRMatchState(const QString& str)
 {
-    double threshold = 0.5;
+    double threshold = 0.6;
     QStringList resultList = ocrResult.split('\n');
     qDebug() << resultList;
     int maxMatchPos = 0;

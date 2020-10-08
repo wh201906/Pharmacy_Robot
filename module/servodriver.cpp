@@ -208,6 +208,9 @@ void ServoDriver::throwDrug()
     rotate_stopSuck();
     delay(1000);
     rotate_initPos();
+    rotate_stopSuck();
+    delay(1000);
+    rotate_initPos();
 }
 
 void ServoDriver::gotoLayer(int layer, float speed)
