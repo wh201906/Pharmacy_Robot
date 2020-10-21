@@ -258,7 +258,7 @@ QMap<QString, QPointF> MainWindow::file2drugInfo(QString path)
 QPointF MainWindow::linearTransform(QPointF vPoint, QRect vRect)
 {
     const double coe1[7] = {-0.693556148, 1.0010192, -0.000878111, 0.006579999, 0.061800669, 0.009361325, -0.114309532};
-    const double coe2[7] = {57.33135, 0.000437, 1.000207, -0.36999, 0.006473, -0.21877, 0.027652};
+    const double coe2[7] = {-57.33135, -0.000437, 1.000207, 0.36999, -0.006473, 0.21877, -0.027652};
     QPointF result;
     result.setX(coe1[0] + vPoint.x()*coe1[1] + vPoint.y()*coe1[2] + vRect.x()*coe1[3] + vRect.y()*coe1[4] + vRect.width()*coe1[5] + vRect.height()*coe1[6]);
     result.setY(coe2[0] + vPoint.x()*coe2[1] + vPoint.y()*coe2[2] + vRect.x()*coe2[3] + vRect.y()*coe2[4] + vRect.width()*coe2[5] + vRect.height()*coe2[6]);

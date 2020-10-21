@@ -19,7 +19,7 @@
      <item>
       <widget class="QLineEdit" name="portEdit">
        <property name="text">
-        <string>ttyUSB</string>
+        <string>ttyUSB1</string>
        </property>
       </widget>
      </item>

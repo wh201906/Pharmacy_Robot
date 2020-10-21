@@ -40,7 +40,7 @@
           <enum>Qt::ClickFocus</enum>
          </property>
          <property name="text">
-          <string>ttyUSB</string>
+          <string>ttyUSB0</string>
          </property>
         </widget>
        </item>
@@ -248,7 +248,7 @@
           <enum>Qt::ClickFocus</enum>
          </property>
          <property name="text">
-          <string>ttyUSB</string>
+          <string>ttyUSB2</string>
          </property>
         </widget>
        </item>
