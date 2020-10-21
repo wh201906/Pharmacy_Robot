@@ -84,9 +84,9 @@ void ServoDriver::move_sendMotion(Move_Axis axis, float step, float speed)
         }
         if(axis == MOVE_AXIS_Y)
         {
-            if(step < 0 && servoState->y + step < 0)
+            if(step > 0 && servoState->y + step > 0)
                 step = -servoState->y;
-            else if(step > 0 && servoState->y + step > MOVE_MAX_Y)
+            else if(step < 0 && servoState->y + step < MOVE_MAX_Y)
                 step = MOVE_MAX_Y - servoState->y;
         }
         if(axis == MOVE_AXIS_Z)
@@ -193,7 +193,7 @@ void ServoDriver::getDrug(float distance)
 void ServoDriver::throwDrug()
 {
     float dx = -servoState->x;
-    float dy = 678 - servoState->y;
+    float dy = -678 - servoState->y;
     float dz = -servoState->z;
     move_sendMotion(MOVE_AXIS_Z, dz, 20);
     move_waitMotionSent();

@@ -137,13 +137,13 @@ bool ServoTestDialog::eventFilter(QObject *watched, QEvent *event)
             on_moveXNButton_clicked();
             break;
         case Qt::Key_A:
-            on_moveYPButton_clicked();
+            on_moveYNButton_clicked();
             break;
         case Qt::Key_S:
             on_moveXPButton_clicked();
             break;
         case Qt::Key_D:
-            on_moveYNButton_clicked();
+            on_moveYPButton_clicked();
             break;
         case Qt::Key_F:
             on_moveZPButton_clicked();
