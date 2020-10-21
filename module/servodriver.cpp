@@ -184,7 +184,15 @@ void ServoDriver::getDrug(float distance)
     move_sendMotion(MOVE_AXIS_Z, dz, 100);
     move_waitMotionSent();
     move_waitMotionFinished();
-    move_sendMotion(MOVE_AXIS_Z, -distance, 20);
+    if(distance >= 30)
+    {
+        move_sendMotion(MOVE_AXIS_Z, -30, 100);
+        move_waitMotionSent(500);
+        move_waitMotionFinished(1500);
+        move_sendMotion(MOVE_AXIS_Z, 30 - distance, 20);
+    }
+    else
+        move_sendMotion(MOVE_AXIS_Z, -distance, 20);
     move_waitMotionSent();
     rotate_suck();
     move_waitMotionFinished();
@@ -200,9 +208,9 @@ void ServoDriver::throwDrug()
     move_waitMotionFinished();
     rotate_sendMotion(ROTATE_SERVO_BOTTOM, 1020, 500);
     delay(1000);
-    move_sendMotion(MOVE_AXIS_X, dx, 80);
+    move_sendMotion(MOVE_AXIS_X, dx, 120);
     move_waitMotionSent();
-    move_sendMotion(MOVE_AXIS_Y, dy, 80);
+    move_sendMotion(MOVE_AXIS_Y, dy, 120);
     move_waitMotionSent();
     move_waitMotionFinished(25000);
     rotate_stopSuck();

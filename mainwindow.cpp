@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     tableFont = ui->drugTableWidget->font();
     tableFont.setPixelSize(32);
     ui->drugTableWidget->setFont(tableFont);
+    initTable();
 }
 
 
@@ -101,62 +102,34 @@ void MainWindow::on_startButton_clicked()
         QString userID = readCard();
         initTable();
         ui->idLabel->setText("Patient ID:" + userID);
-
         requiredDrugInfo = readPatientInfo(userID);
         if(requiredDrugInfo.size() == 0)
             continue;
-        QList<QByteArray> patientInfo = file2list("/home/hdu/Pharmacy_Robot_RAM/" + userID + ".txt");
-        if(patientInfo.size() == 0)
-        {
-            ui->nameLabel->setText("Name:Not Found");
-            continue;
-        }
-        ui->nameLabel->setText("Patient Name:" + patientInfo[0]);
-        for(int i = 1; i < patientInfo.size(); i++)
-        {
-            if(patientInfo[i].size() < 2)
-                continue;
-            QList<QByteArray> requiredRawDrugInfo = patientInfo[i].split(',');
-            if(requiredRawDrugInfo[0].startsWith('#'))
-                continue;
-            qDebug() << QString(requiredRawDrugInfo[0]) << QString(requiredRawDrugInfo[1]);
-            addItem2Table(requiredRawDrugInfo[0], requiredRawDrugInfo[1]);
-            requiredDrugInfo.insert(requiredRawDrugInfo[0], requiredRawDrugInfo[1]);
-        }
 
         QMap<QString, QString> errorDrugInfo;
-        for(int retry = 0; retry < 3; retry++)
+        if(!isProcessing)
+            break;
+        for(QMap<QString, QString>::iterator it = requiredDrugInfo.begin(); it != requiredDrugInfo.end(); it++)
         {
             if(!isProcessing)
                 break;
-            for(QMap<QString, QString>::iterator it = requiredDrugInfo.begin(); it != requiredDrugInfo.end(); it++)
+            QPointF vPoint = gotoPos(it.key());
+            if((!callOCR()) || (!getOCRMatchState(it.value())))
+                vPoint = gotoPos(it.key(), 0, -5);
+            if((!callOCR()) || (!getOCRMatchState(it.value())))
             {
-                if(!isProcessing)
-                    break;
-                QPointF vPoint = gotoPos(it.key());
-                if((!callOCR()) || (!getOCRMatchState(it.value())))
-                {
-                    errorDrugInfo.insert(it.key(), it.value());
-                    emit setLabelBuffer("Not Match");
-                    continue;
-                }
-                emit setLabelBuffer(it.key());
-                QPointF catchPoint = linearTransform(vPoint, visualRect);
-                if(!isProcessing)
-                    break;
-                //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
-                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
-                delay(500);
-                emit setLabelBuffer("");
-                qDebug() << QString("error info after %1 try").arg(retry + 1) + "\n" << errorDrugInfo;
+                errorDrugInfo.insert(it.key(), it.value());
+                emit setLabelBuffer("Not Match");
+                continue;
             }
-            if(errorDrugInfo.isEmpty())
+            emit setLabelBuffer(it.key());
+            QPointF catchPoint = linearTransform(vPoint, visualRect);
+            if(!isProcessing)
                 break;
-            if(retry < 2)
-            {
-                requiredDrugInfo = errorDrugInfo;
-                errorDrugInfo.clear();
-            }
+            //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
+            servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
+            delay(500);
+            emit setLabelBuffer("");
         }
         qDebug() << errorDrugInfo;
         if(!errorDrugInfo.isEmpty())
@@ -276,9 +249,6 @@ void MainWindow::on_stopButton_clicked()
     servoDriver->rotate_stopSuck();
 }
 
-
-//double MainWindow::on
-
 double MainWindow::getSimilarity(const QString& str1, const QString& str2)
 {
     quint64 multiply = 0, freq1 = 0, freq2 = 0;
@@ -334,9 +304,11 @@ bool MainWindow::getOCRMatchState(const QString& str)
     return maxMatchVal >= threshold;
 }
 
-QPointF MainWindow::gotoPos(const QString& ID)
+QPointF MainWindow::gotoPos(const QString& ID, float corrX, float corrY)
 {
     QPointF vPoint = totalDrugInfo[ID];
+    vPoint.setX(vPoint.x() + corrX);
+    vPoint.setY(vPoint.y() + corrY);
     servoDriver->move_goto(vPoint.x(), vPoint.y(), 200);
     servoDriver->move_waitMotionSent();
     servoDriver->move_waitMotionFinished();
@@ -368,6 +340,7 @@ QString MainWindow::readCard()
         ui->idLabel->setText("No Card");
         ui->nameLabel->setText("Patient Name:");
         delay(1000);
+        userID = reader->get14aUID().toUpper();
     }
     return userID;
 }

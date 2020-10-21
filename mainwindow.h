@@ -38,9 +38,11 @@ public:
     double getSimilarity(const QString &str1, const QString &str2);
     bool callOCR();
     bool getOCRMatchState(const QString &str);
-    QPointF gotoPos(const QString &ID);
+    QPointF gotoPos(const QString &ID, float corrX = 0, float corrY = 0);
     void addItem2Table(const QString &ID, const QString &name);
     void initTable();
+    QString readCard();
+    QMap<QString, QString> readPatientInfo(const QString &ID);
 public slots:
     void onDrugRectFetched(QRect rect);
     void onFrameRefreshed();
