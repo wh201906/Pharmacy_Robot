@@ -85,6 +85,8 @@ void Camera::getRectResult()
 void Camera::getOCRResult()
 {
     labelBuffer = "";
+    if(roiFrame->cols == 0)
+        return;
     if(cv::imwrite("/home/hdu/Pharmacy_Robot_RAM/roi.jpg", *roiFrame))
         callOCR();
 }

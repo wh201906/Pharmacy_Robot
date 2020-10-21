@@ -152,7 +152,7 @@ void MainWindow::on_startButton_clicked()
                 if(!isProcessing)
                     break;
                 //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
-                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 75);
+                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
                 delay(500);
                 emit setLabelBuffer("");
                 qDebug() << QString("error info after %1 try").arg(retry + 1) + "\n" << errorDrugInfo;
@@ -190,7 +190,7 @@ void MainWindow::on_startButton_clicked()
                 for(reqIt = requiredDrugInfo.begin(); reqIt != requiredDrugInfo.end(); reqIt++)
                 {
                     qDebug() << "currDrug:" << reqIt.value() << totalIt.key();
-                    if(callOCR() && getOCRMatchState(reqIt.value()))
+                    if(getOCRMatchState(reqIt.value()))
                     {
                         emit setLabelBuffer(reqIt.key());
                         break;
@@ -206,7 +206,7 @@ void MainWindow::on_startButton_clicked()
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
                     break;
-                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 75);
+                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
                 delay(500);
                 emit setLabelBuffer("");
             }
