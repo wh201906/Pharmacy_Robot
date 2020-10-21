@@ -39,6 +39,8 @@ public:
     bool callOCR();
     bool getOCRMatchState(const QString &str);
     QPointF gotoPos(const QString &ID);
+    void addItem2Table(const QString &ID, const QString &name);
+    void initTable();
 public slots:
     void onDrugRectFetched(QRect rect);
     void onFrameRefreshed();
