@@ -133,7 +133,7 @@ QRect Camera::drug_positioning(cv::Mat* frame, cv::Mat* roiFrame, cv::Mat* resul
     //图像增强
     convertScaleAbs(edgeX_Y_Mat, edgeX_Y_Mat_out);
     //二值化
-    threshold(edgeX_Y_Mat_out, g_edgeX_Y_Mat_out, 120, 255, THRESH_BINARY);
+    threshold(edgeX_Y_Mat_out, g_edgeX_Y_Mat_out, 150, 255, THRESH_BINARY);
     //膨胀./ramdisk.sh 123456
     cv::Mat element = getStructuringElement(MORPH_RECT, Size(4, 3), Point(-1, -1));
     morphologyEx(g_edgeX_Y_Mat_out, dilate, 1, element, Point(-1, -1));
