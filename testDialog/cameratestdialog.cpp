@@ -15,6 +15,7 @@ CameraTestDialog::CameraTestDialog(Camera* camera, QWidget *parent) :
     connect(camera, &Camera::frameAddr, this, &CameraTestDialog::onFrameAddrFetched);
     connect(camera, &Camera::OCRResult, this, &CameraTestDialog::onOCRResultFetched);
     connect(camera, &Camera::drugRect, this, &CameraTestDialog::onDrugRectFetched);
+    ui->rawFrameLabel->setVisible(false);
 }
 
 CameraTestDialog::~CameraTestDialog()

@@ -100,8 +100,11 @@ void MainWindow::on_startButton_clicked()
         totalDrugInfo = file2drugInfo("/home/hdu/Pharmacy_Robot_RAM/drugInfo.txt");
         QMap<QString, QString> requiredDrugInfo;
         initTable();
+        ui->idLabel->setText("No Card");
+        ui->nameLabel->setText("Patient Name:");
         QString userID = readCard();
         ui->idLabel->setText("Patient ID:" + userID);
+        ui->nameLabel->setText("Patient Name:Not Found");
         requiredDrugInfo = readPatientInfo(userID);
         if(requiredDrugInfo.size() == 0)
             continue;
@@ -115,24 +118,26 @@ void MainWindow::on_startButton_clicked()
                 break;
             QPointF vPoint = gotoPos(it.key());
             if((!callOCR()) || (!getOCRMatchState(it.value())))
-                vPoint = gotoPos(it.key(), 0, -5);
-            if((!callOCR()) || (!getOCRMatchState(it.value())))
             {
-                errorDrugInfo.insert(it.key(), it.value());
-                emit setLabelBuffer("Not Match");
-                continue;
+                vPoint = gotoPos(it.key(), 0, -5);
+                if((!callOCR()) || (!getOCRMatchState(it.value())))
+                {
+                    errorDrugInfo.insert(it.key(), it.value());
+                    emit setLabelBuffer("Not Match");
+                    continue;
+                }
             }
             emit setLabelBuffer(it.key());
             QPointF catchPoint = linearTransform(vPoint, visualRect);
             if(!isProcessing)
                 break;
-            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + it.key() + ".jpg");
-            //servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
+            //qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + it.key() + ".jpg");
+            servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 55);
             delay(500);
             emit setLabelBuffer("");
         }
         qDebug() << errorDrugInfo;
-        /*
+
         if(!errorDrugInfo.isEmpty())
         {
             requiredDrugInfo = errorDrugInfo;
@@ -173,11 +178,11 @@ void MainWindow::on_startButton_clicked()
                 QPointF catchPoint = linearTransform(vPoint, visualRect);
                 if(!isProcessing)
                     break;
-                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
+                servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 55);
                 delay(500);
                 emit setLabelBuffer("");
             }
-        }*/
+        }
         initTable();
         if(!errorDrugInfo.isEmpty())
             isProcessing = false;
@@ -338,9 +343,7 @@ QString MainWindow::readCard()
     QString userID = reader->get14aUID().toUpper();
     while(userID == "")
     {
-        ui->idLabel->setText("No Card");
-        ui->nameLabel->setText("Patient Name:");
-        delay(1000);
+        delay(2000);
         userID = reader->get14aUID().toUpper();
     }
     return userID;
@@ -352,7 +355,6 @@ QMap<QString, QString> MainWindow::readPatientInfo(const QString& ID)
     QList<QByteArray> patientInfo = file2list("/home/hdu/Pharmacy_Robot_RAM/" + ID + ".txt");
     if(patientInfo.size() == 0)
     {
-        ui->nameLabel->setText("Name:Not Found");
         return result;
     }
     ui->nameLabel->setText("Patient Name:" + patientInfo[0]);
