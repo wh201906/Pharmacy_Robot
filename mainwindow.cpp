@@ -99,8 +99,8 @@ void MainWindow::on_startButton_clicked()
     {
         totalDrugInfo = file2drugInfo("/home/hdu/Pharmacy_Robot_RAM/drugInfo.txt");
         QMap<QString, QString> requiredDrugInfo;
-        QString userID = readCard();
         initTable();
+        QString userID = readCard();
         ui->idLabel->setText("Patient ID:" + userID);
         requiredDrugInfo = readPatientInfo(userID);
         if(requiredDrugInfo.size() == 0)
@@ -127,11 +127,12 @@ void MainWindow::on_startButton_clicked()
             if(!isProcessing)
                 break;
             //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
-            servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
+            //servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
             delay(500);
             emit setLabelBuffer("");
         }
         qDebug() << errorDrugInfo;
+        /*
         if(!errorDrugInfo.isEmpty())
         {
             requiredDrugInfo = errorDrugInfo;
@@ -176,7 +177,7 @@ void MainWindow::on_startButton_clicked()
                 delay(500);
                 emit setLabelBuffer("");
             }
-        }
+        }*/
         initTable();
         if(!errorDrugInfo.isEmpty())
             isProcessing = false;
@@ -285,7 +286,7 @@ bool MainWindow::callOCR()
 
 bool MainWindow::getOCRMatchState(const QString& str)
 {
-    double threshold = 0.6;
+    double threshold = 0.54;
     QStringList resultList = ocrResult.split('\n');
     qDebug() << resultList;
     int maxMatchPos = 0;
