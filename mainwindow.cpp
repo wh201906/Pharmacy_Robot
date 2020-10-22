@@ -126,7 +126,7 @@ void MainWindow::on_startButton_clicked()
             QPointF catchPoint = linearTransform(vPoint, visualRect);
             if(!isProcessing)
                 break;
-            //            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + ID + ".jpg");
+            qDebug() << ui->cameraLabel->pixmap(Qt::ReturnByValue).save("/home/hdu/img/" + it.key() + ".jpg");
             //servoDriver->fetchDrug(catchPoint.x(), catchPoint.y(), 60);
             delay(500);
             emit setLabelBuffer("");
